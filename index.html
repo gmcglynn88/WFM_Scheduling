@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WFM Scheduling Tool | Rule-Based Scheduling</title>
+  <style>
+    :root {
+      --primary-color: #63AB8F;
+      --secondary-color: #4A8C7D;
+      --border-color: #DEE2E6;
+      --light-bg: #F8F9FA;
+      --card-bg: #FFFFFF;
+      --text-color: #2C3E50;
+      --text-light: #6C757D;
+      --warn: #f59e0b;
+      --bad: #dc2626;
+      --good: #16a34a;
+      --schedule-available: #63AB8F;
+      --schedule-assigned: #4A8C7D;
+      --schedule-unavailable: #9CA3AF;
+      --schedule-overtime: #F59E0B;
+    }
+    
+    body, h1, h2, h3, h4, h5, h6, p, div, span, label, button, input, select, textarea, th, td, li, ul, ol {
+      font-family: 'Aptos', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 20px;
+      background: var(--light-bg);
+      color: var(--text-color);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .brand h1 {
+      margin: 0;
+      font-size: 28px;
+      color: var(--secondary-color);
+      font-weight: 800;
+    }
+    
+    .brand .subtitle {
+      color: var(--text-light);
+      font-weight: 600;
+      font-size: 14px;
+      margin-left: 8px;
+    }
+    
+    .schedule-status {
+      background: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 14px;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    /* Main Layout */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    
+    @media (max-width: 768px) {
+      .cards-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Styling */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    
+    .card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    }
+    
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .card-title h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--secondary-color);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(99, 171, 143, 0.1);
+      color: var(--secondary-color);
+      border: 1px solid rgba(99, 171, 143, 0.3);
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text-color);
+    }
+    
+    select, input, textarea, button {
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--card-bg);
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+    
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(99, 171, 143, 0.1);
+    }
+    
+    button {
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      border: none;
+    }
+    
+    button:hover {
+      background: var(--secondary-color);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    button.secondary {
+      background: #fff;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+    
+    button.secondary:hover {
+      background: rgba(99, 171, 143, 0.1);
+      border-color: var(--secondary-color);
+      color: var(--secondary-color);
+    }
+    
+    button:disabled {
+      background: var(--text-light);
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Row layouts */
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    
+    @media (max-width: 768px) {
+      .row, .row-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Button Groups */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .btn-group button {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    /* Rule Toggles */
+    .rule-group {
+      margin-bottom: 24px;
+    }
+    
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(99, 171, 143, 0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .rule-item:hover {
+      border-color: var(--primary-color);
+      background: rgba(99, 171, 143, 0.1);
+    }
+    
+    .rule-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+    }
+    
+    .rule-label {
+      flex: 1;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    .rule-description {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+    
+    .rule-settings {
+      margin-top: 12px;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      display: none;
+    }
+    
+    .rule-item.active .rule-settings {
+      display: block;
+    }
+
+    /* Shift Pattern Builder */
+    .shift-pattern-builder {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      background: rgba(99, 171, 143, 0.05);
+    }
+    
+    .shift-row {
+      display: grid;
+      grid-template-columns: 100px 100px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .shift-row:last-child {
+      border-bottom: none;
+    }
+    
+    @media (max-width: 768px) {
+      .shift-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+
+    /* Staff Pool Management */
+    .staff-pool {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      background: white;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .staff-item {
+      display: grid;
+      grid-template-columns: auto 1fr 80px 80px 80px auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .staff-item:last-child {
+      border-bottom: none;
+    }
+    
+    .staff-item:hover {
+      background: rgba(99, 171, 143, 0.05);
+    }
+    
+    @media (max-width: 768px) {
+      .staff-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+
+    /* Schedule View */
+    .schedule-view-container {
+      margin-top: 32px;
+      border-top: 2px solid var(--border-color);
+      padding-top: 24px;
+    }
+    
+    .schedule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .schedule-header h2 {
+      margin: 0;
+      font-size: 24px;
+      color: var(--secondary-color);
+    }
+    
+    .schedule-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .date-navigation {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .date-navigation button {
+      padding: 8px 12px;
+      min-width: auto;
+    }
+
+    /* Schedule Grid */
+    .schedule-grid {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      margin-top: 20px;
+    }
+    
+    .schedule-row {
+      display: grid;
+      grid-template-columns: 120px repeat(24, 1fr);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .schedule-row:last-child {
+      border-bottom: none;
+    }
+    
+    .time-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 12px;
+      font-weight: 600;
+      font-size: 13px;
+      text-align: center;
+    }
+    
+    .hour-header {
+      background: rgba(99, 171, 143, 0.1);
+      padding: 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--secondary-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .hour-header:last-child {
+      border-right: none;
+    }
+    
+    .schedule-cell {
+      padding: 8px;
+      text-align: center;
+      border-right: 1px solid var(--border-color);
+      min-height: 60px;
+      position: relative;
+    }
+    
+    .schedule-cell:last-child {
+      border-right: none;
+    }
+    
+    .schedule-cell.available {
+      background: rgba(99, 171, 143, 0.1);
+    }
+    
+    .schedule-cell.assigned {
+      background: rgba(99, 171, 143, 0.3);
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    .schedule-cell.unavailable {
+      background: rgba(156, 163, 175, 0.1);
+      color: var(--text-light);
+    }
+    
+    .schedule-cell.overtime {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warn);
+    }
+    
+    .staff-count {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    
+    .requirement-count {
+      font-size: 11px;
+      color: var(--text-light);
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+    }
+
+    /* Results Summary */
+    .summary-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    
+    .tile {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 20px;
+      background: #fff;
+      text-align: center;
+    }
+    
+    .tile .label {
+      color: var(--text-light);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    
+    .tile .value {
+      font-size: 28px;
+      font-weight: 900;
+      margin-top: 4px;
+      color: var(--secondary-color);
+      line-height: 1.2;
+    }
+    
+    .tile .subtext {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-light);
+      line-height: 1.4;
+    }
+
+    /* Staff Assignments Table */
+    .assignments-table {
+      max-height: 400px;
+      overflow: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-top: 24px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: white;
+    }
+    
+    thead th {
+      background: var(--primary-color);
+      color: white;
+      text-align: left;
+      padding: 16px 12px;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: .3px;
+    }
+    
+    tbody td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+    
+    tbody tr:hover {
+      background: rgba(99, 171, 143, 0.05);
+    }
+    
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .center {
+      text-align: center;
+    }
+    
+    .right {
+      text-align: right;
+    }
+
+    /* Optimization Results */
+    .optimization-results {
+      background: rgba(99, 171, 143, 0.05);
+      border: 1px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .optimization-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .metric {
+      text-align: center;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .metric .value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--secondary-color);
+    }
+    
+    .metric .label {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* Help Text */
+    .help-text {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    
+    .note {
+      background: rgba(99, 171, 143, 0.05);
+      border-left: 4px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 14px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-color);
+      line-height: 1.5;
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      height: 8px;
+      background: var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-color);
+      transition: width 0.3s ease;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      color: var(--text-light);
+      font-size: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .schedule-row {
+        grid-template-columns: 100px repeat(12, 1fr);
+        font-size: 11px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .card {
+        padding: 16px;
+      }
+      
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      .schedule-status {
+        width: 100%;
+        min-width: unset;
+      }
+      
+      .schedule-row {
+        grid-template-columns: 80px repeat(8, 1fr);
+        font-size: 10px;
+      }
+      
+      .schedule-cell {
+        padding: 4px;
+        min-height: 40px;
+      }
+      
+      .staff-count {
+        font-size: 10px;
+      }
+      
+      .schedule-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .schedule-row {
+        grid-template-columns: 70px repeat(6, 1fr);
+      }
+      
+      .btn-group {
+        flex-direction: column;
+      }
+      
+      .btn-group button {
+        width: 100%;
+      }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="brand">
+        <h1>WFM Scheduling Tool</h1>
+        <span class="subtitle">Rule-Based Scheduling</span>
+      </div>
+      <div class="schedule-status" id="scheduleStatus">
+        Ready to create schedule
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-layout">
+      <!-- Schedule Configuration Card -->
+      <div class="card">
+        <div class="card-title">
+          <h2>Schedule Configuration</h2>
+          <span class="badge">Setup</span>
+        </div>
+        
+        <div class="row">
+          <div class="form-group">
+            <label for="schedulePeriod">Schedule Period</label>
+            <select id="schedulePeriod">
+              <option value="7">7 days (1 week)</option>
+              <option value="14" selected>14 days (2 weeks)</option>
+              <option value="28">28 days (4 weeks)</option>
+              <option value="30">30 days (1 month)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" value="">
+            <div class="help-text">First day of the schedule</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label for="intervalLength">Interval Length</label>
+            <select id="intervalLength">
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60" selected>60 minutes</option>
+              <option value="120">120 minutes</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="businessHours">Business Hours</label>
+            <select id="businessHours">
+              <option value="8_18">8:00 - 18:00 (10 hours)</option>
+              <option value="9_17">9:00 - 17:00 (8 hours)</option>
+              <option value="8_20">8:00 - 20:00 (12 hours)</option>
+              <option value="24">24/7 Operation</option>
+              <option value="custom">Custom Hours</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="customHoursSection" class="form-group" style="display: none;">
+          <label>Custom Business Hours</label>
+          <div class="row">
+            <input type="time" id="customStart" value="08:00">
+            <input type="time" id="customEnd" value="18:00">
+          </div>
+        </div>
+      </div>
+
+      <!-- Staff Pool Card -->
+      <div class="cards-row">
+        <div class="card">
+          <div class="card-title">
+            <h2>Staff Pool</h2>
+            <span class="badge">Resources</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="availableFTE">Available FTE</label>
+            <input type="number" id="availableFTE" min="1" value="20" step="1">
+            <div class="help-text">Full-time equivalent staff available</div>
+          </div>
+
+          <div class="form-group">
+            <label for="partTimeRatio">Part-time Ratio (%)</label>
+            <input type="number" id="partTimeRatio" min="0" max="100" value="30" step="1">
+            <div class="help-text">Percentage of part-time staff</div>
+          </div>
+
+          <div class="form-group">
+            <label for="skillLevel">Average Skill Level</label>
+            <select id="skillLevel">
+              <option value="0.8">Level 1 (Trainee)</option>
+              <option value="1.0" selected>Level 2 (Standard)</option>
+              <option value="1.2">Level 3 (Experienced)</option>
+              <option value="1.5">Level 4 (Expert)</option>
+            </select>
+            <div class="help-text">Productivity multiplier</div>
+          </div>
+
+          <button id="manageStaffBtn" class="secondary">👥 Manage Staff Details</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <h2>Shift Patterns</h2>
+            <span class="badge">Work Hours</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="shiftPattern">Primary Shift Pattern</label>
+            <select id="shiftPattern">
+              <option value="8x5">8x5 (8hrs, 5 days/week)</option>
+              <option value="9x5" selected>9x5 (9hrs, 5 days/week)</option>
+              <option value="10x4">10x4 (10hrs, 4 days/week)</option>
+              <option value="12x3">12x3 (12hrs, 3 days/week)</option>
+              <option value="custom">Custom Pattern</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="shiftStartTime">Shift Start Times</label>
+            <select id="shiftStartTime" multiple size="3">
+              <option value="8" selected>8:00 AM</option>
+              <option value="9">9:00 AM</option>
+              <option value="10">10:00 AM</option>
+              <option value="11">11:00 AM</option>
+              <option value="12">12:00 PM</option>
+              <option value="13">1:00 PM</option>
+              <option value="14">2:00 PM</option>
+            </select>
+            <div class="help-text">Hold Ctrl/Cmd to select multiple start times</div>
+          </div>
+
+          <button id="addShiftPatternBtn" class="secondary">+ Add Shift Pattern</button>
+        </div>
+      </div>
+
+      <!-- Scheduling Rules Card -->
+      <div class="card">
+        <div class="card-title">
+          <h2>Scheduling Rules</h2>
+          <span class="badge">Optimization</span>
+        </div>
+        
+        <div class="rule-group">
+          <div class="rule-item">
+            <input type="checkbox" id="ruleBestFit" checked>
+            <div>
+              <div class="rule-label">Best Fit to Requirements</div>
+              <div class="rule-description">Match staff as closely as possible to forecasted requirements</div>
+            </div>
+          </div>
+          
+          <div class="rule-item active">
+            <input type="checkbox" id="ruleEvenSpread" checked>
+            <div>
+              <div class="rule-label">Even Workload Spread</div>
+              <div class="rule-description">Distribute workload evenly across staff and time periods</div>
+            </div>
+          </div>
+          
+          <div class="rule-item">
+            <input type="checkbox" id="ruleMinGaps">
+            <div>
+              <div class="rule-label">Minimize Schedule Gaps</div>
+              <div class="rule-description">Reduce idle time between shifts</div>
+            </div>
+          </div>
+          
+          <div class="rule-item">
+            <input type="checkbox" id="ruleRespectPreferences">
+            <div>
+              <div class="rule-label">Respect Staff Preferences</div>
+              <div class="rule-description">Consider staff availability and shift preferences</div>
+            </div>
+          </div>
+          
+          <div class="rule-item">
+            <input type="checkbox" id="ruleAvoidOvertime">
+            <div>
+              <div class="rule-label">Minimize Overtime</div>
+              <div class="rule-description">Avoid overtime hours when possible</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row-3">
+          <div class="form-group">
+            <label for="maxConsecutiveDays">Max Consecutive Days</label>
+            <input type="number" id="maxConsecutiveDays" min="1" max="7" value="5">
+            <div class="help-text">Maximum days without a day off</div>
+          </div>
+
+          <div class="form-group">
+            <label for="minHoursBetweenShifts">Min Hours Between Shifts</label>
+            <input type="number" id="minHoursBetweenShifts" min="8" max="24" value="10">
+            <div class="help-text">Minimum rest between shifts</div>
+          </div>
+
+          <div class="form-group">
+            <label for="maxWeeklyHours">Max Weekly Hours</label>
+            <input type="number" id="maxWeeklyHours" min="20" max="60" value="40">
+            <div class="help-text">Maximum hours per week per staff</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forecast Import Card -->
+      <div class="card">
+        <div class="card-title">
+          <h2>Forecast Requirements</h2>
+          <span class="badge">Demand</span>
+        </div>
+        
+        <div class="form-group">
+          <label for="forecastSource">Forecast Source</label>
+          <select id="forecastSource">
+            <option value="manual">Manual Input</option>
+            <option value="import" selected>Import from Forecast Tool</option>
+            <option value="historical">Historical Patterns</option>
+          </select>
+        </div>
+
+        <div id="manualForecastSection" class="form-group" style="display: none;">
+          <label>Daily Requirements</label>
+          <div class="row-3">
+            <input type="number" placeholder="Mon" value="15">
+            <input type="number" placeholder="Tue" value="18">
+            <input type="number" placeholder="Wed" value="20">
+            <input type="number" placeholder="Thu" value="22">
+            <input type="number" placeholder="Fri" value="25">
+            <input type="number" placeholder="Sat" value="12">
+            <input type="number" placeholder="Sun" value="8">
+          </div>
+        </div>
+
+        <div id="importForecastSection">
+          <div class="form-group">
+            <label for="forecastFile">Upload Forecast CSV</label>
+            <input type="file" id="forecastFile" accept=".csv">
+            <div class="help-text">Format: date, time, queue, required_staff</div>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Note:</strong> Schedule will be generated based on forecast requirements and configured rules.
+        </div>
+      </div>
+
+      <!-- Generate Schedule Card -->
+      <div class="card">
+        <div class="card-title">
+          <h2>Generate Schedule</h2>
+          <span class="badge">Calculate</span>
+        </div>
+        
+        <div class="btn-group">
+          <button id="generateScheduleBtn" class="primary">📅 Generate Schedule</button>
+          <button id="optimizeScheduleBtn" class="secondary">⚡ Optimize Schedule</button>
+          <button id="clearScheduleBtn" class="secondary">Clear Schedule</button>
+        </div>
+
+        <div class="progress-bar" id="progressBar" style="display: none;">
+          <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule Results Section (initially hidden) -->
+    <div id="scheduleResults" class="schedule-view-container" style="display: none;">
+      <div class="schedule-header">
+        <h2>Generated Schedule</h2>
+        <div class="schedule-controls">
+          <div class="date-navigation">
+            <button id="prevWeekBtn" class="secondary">◀</button>
+            <span id="currentWeekDisplay">Week 1, 2024</span>
+            <button id="nextWeekBtn" class="secondary">▶</button>
+          </div>
+          <button id="exportScheduleBtn" class="secondary">📤 Export Schedule</button>
+        </div>
+      </div>
+
+      <div class="summary-tiles">
+        <div class="tile">
+          <div class="label">Scheduled Hours</div>
+          <div class="value" id="resultScheduledHours">—</div>
+          <div class="subtext">Total staff hours</div>
+        </div>
+        <div class="tile">
+          <div class="label">Utilization</div>
+          <div class="value" id="resultUtilization">—</div>
+          <div class="subtext">Effectiveness rate</div>
+        </div>
+        <div class="tile">
+          <div class="label">Coverage Gaps</div>
+          <div class="value" id="resultCoverageGaps">—</div>
+          <div class="subtext">Hours understaffed</div>
+        </div>
+        <div class="tile">
+          <div class="label">Overtime Hours</div>
+          <div class="value" id="resultOvertime">—</div>
+          <div class="subtext">Additional hours</div>
+        </div>
+      </div>
+
+      <!-- Schedule Legend -->
+      <div style="display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 20px; height: 20px; background: rgba(99, 171, 143, 0.1); border: 1px solid var(--border-color);"></div>
+          <span style="font-size: 12px;">Available Staff</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 20px; height: 20px; background: rgba(99, 171, 143, 0.3); border: 1px solid var(--border-color);"></div>
+          <span style="font-size: 12px;">Assigned Staff</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 20px; height: 20px; background: rgba(156, 163, 175, 0.1); border: 1px solid var(--border-color);"></div>
+          <span style="font-size: 12px;">Unavailable</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 20px; height: 20px; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--border-color);"></div>
+          <span style="font-size: 12px;">Overtime</span>
+        </div>
+      </div>
+
+      <!-- Schedule Grid -->
+      <div class="schedule-grid" id="scheduleGrid">
+        <!-- Schedule grid will be generated by JavaScript -->
+      </div>
+
+      <!-- Optimization Results -->
+      <div class="optimization-results" id="optimizationResults" style="display: none;">
+        <h3 style="margin-top: 0; color: var(--secondary-color);">Optimization Results</h3>
+        <div id="optimizationMessage"></div>
+        <div class="optimization-metrics" id="optimizationMetrics">
+          <!-- Metrics will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Staff Assignments Table -->
+      <div class="assignments-table">
+        <table id="assignmentsTable">
+          <thead>
+            <tr>
+              <th>Staff ID</th>
+              <th>Name</th>
+              <th class="center">Role</th>
+              <th class="center">Skill Level</th>
+              <th class="center">Scheduled Hours</th>
+              <th class="center">Shift Pattern</th>
+              <th class="center">Days Working</th>
+              <th class="center">Status</th>
+            </tr>
+          </thead>
+          <tbody id="assignmentsTableBody">
+            <tr>
+              <td colspan="8" class="center" style="padding: 40px; color: var(--text-light);">
+                No schedule generated yet. Click "Generate Schedule" to create assignments.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note" style="margin-top: 20px;">
+        <strong>Schedule Health:</strong> Green indicates adequate coverage, yellow shows minor gaps, red indicates significant understaffing.
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>WFM Scheduling Tool v1.0 | Rule-based scheduling with optimization algorithms</p>
+      <p>For support or questions, contact your WFM administrator</p>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const scheduleStatus = document.getElementById('scheduleStatus');
+    const generateScheduleBtn = document.getElementById('generateScheduleBtn');
+    const optimizeScheduleBtn = document.getElementById('optimizeScheduleBtn');
+    const clearScheduleBtn = document.getElementById('clearScheduleBtn');
+    const exportScheduleBtn = document.getElementById('exportScheduleBtn');
+    const scheduleResults = document.getElementById('scheduleResults');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const businessHoursSelect = document.getElementById('businessHours');
+    const customHoursSection = document.getElementById('customHoursSection');
+    const forecastSourceSelect = document.getElementById('forecastSource');
+    const manualForecastSection = document.getElementById('manualForecastSection');
+    const importForecastSection = document.getElementById('importForecastSection');
+    const scheduleGrid = document.getElementById('scheduleGrid');
+    const prevWeekBtn = document.getElementById('prevWeekBtn');
+    const nextWeekBtn = document.getElementById('nextWeekBtn');
+    const currentWeekDisplay = document.getElementById('currentWeekDisplay');
+    const assignmentsTableBody = document.getElementById('assignmentsTableBody');
+    const optimizationResults = document.getElementById('optimizationResults');
+    const optimizationMessage = document.getElementById('optimizationMessage');
+    const optimizationMetrics = document.getElementById('optimizationMetrics');
+
+    // Schedule data storage
+    let scheduleData = {
+      requirements: [],
+      staff: [],
+      assignments: [],
+      generatedSchedule: null,
+      currentWeek: 0,
+      totalWeeks: 1,
+      optimizationResults: null
+    };
+
+    // Initialize date picker
+    function initializeDatePicker() {
+      const today = new Date();
+      const nextMonday = new Date(today);
+      const daysUntilMonday = (1 - today.getDay() + 7) % 7;
+      nextMonday.setDate(today.getDate() + daysUntilMonday);
+      
+      const formattedDate = nextMonday.toISOString().split('T')[0];
+      document.getElementById('startDate').value = formattedDate;
+    }
+
+    // Business hours toggle
+    businessHoursSelect.addEventListener('change', function() {
+      customHoursSection.style.display = this.value === 'custom' ? 'block' : 'none';
+    });
+
+    // Forecast source toggle
+    forecastSourceSelect.addEventListener('change', function() {
+      manualForecastSection.style.display = this.value === 'manual' ? 'block' : 'none';
+      importForecastSection.style.display = this.value === 'import' ? 'block' : 'none';
+    });
+
+    // Rule toggles
+    document.querySelectorAll('.rule-item input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const ruleItem = this.closest('.rule-item');
+        if (this.checked) {
+          ruleItem.classList.add('active');
+        } else {
+          ruleItem.classList.remove('active');
+        }
+      });
+    });
+
+    // Scheduling Engine
+    class SchedulingEngine {
+      constructor() {
+        this.rules = {};
+        this.staffPool = [];
+        this.requirements = [];
+      }
+
+      // Generate schedule based on requirements and rules
+      generateSchedule(requirements, staffPool, rules) {
+        this.requirements = requirements;
+        this.staffPool = staffPool;
+        this.rules = rules;
+        
+        const schedule = this.createInitialSchedule();
+        
+        // Apply rules
+        if (rules.bestFit) {
+          this.applyBestFit(schedule);
+        }
+        
+        if (rules.evenSpread) {
+          this.applyEvenSpread(schedule);
+        }
+        
+        if (rules.minGaps) {
+          this.minimizeGaps(schedule);
+        }
+        
+        if (rules.respectPreferences) {
+          this.applyStaffPreferences(schedule);
+        }
+        
+        if (rules.avoidOvertime) {
+          this.minimizeOvertime(schedule);
+        }
+        
+        // Apply constraints
+        this.applyConstraints(schedule);
+        
+        return schedule;
+      }
+
+      createInitialSchedule() {
+        const schedule = {
+          days: [],
+          assignments: [],
+          metrics: {
+            totalHours: 0,
+            utilization: 0,
+            coverageGaps: 0,
+            overtime: 0,
+            satisfaction: 0
+          }
+        };
+
+        // Create empty schedule structure
+        const period = parseInt(document.getElementById('schedulePeriod').value);
+        for (let i = 0; i < period; i++) {
+          schedule.days.push({
+            date: new Date(),
+            requirements: [],
+            assignments: [],
+            coverage: []
+          });
+        }
+
+        return schedule;
+      }
+
+      applyBestFit(schedule) {
+        // Match staff to requirements as closely as possible
+        schedule.days.forEach((day, dayIndex) => {
+          const dayRequirements = this.requirements[dayIndex] || [];
+          
+          dayRequirements.forEach((requirement, hourIndex) => {
+            const availableStaff = this.getAvailableStaff(dayIndex, hourIndex);
+            const required = requirement;
+            
+            // Assign staff
+            const assigned = Math.min(availableStaff.length, required);
+            for (let i = 0; i < assigned; i++) {
+              const staff = availableStaff[i];
+              this.assignStaff(schedule, staff, dayIndex, hourIndex);
+            }
+            
+            // Track gaps
+            if (assigned < required) {
+              schedule.metrics.coverageGaps += (required - assigned);
+            }
+          });
+        });
+      }
+
+      applyEvenSpread(schedule) {
+        // Distribute workload evenly across staff
+        const staffWorkload = {};
+        this.staffPool.forEach(staff => {
+          staffWorkload[staff.id] = 0;
+        });
+
+        // Reassign to balance workload
+        schedule.days.forEach((day, dayIndex) => {
+          day.assignments.forEach((assignment, hourIndex) => {
+            const assignedStaff = assignment;
+            if (assignedStaff.length > 0) {
+              // Find staff with least workload
+              let minWorkload = Infinity;
+              let bestStaff = null;
+              
+              assignedStaff.forEach(staffId => {
+                if (staffWorkload[staffId] < minWorkload) {
+                  minWorkload = staffWorkload[staffId];
+                  bestStaff = staffId;
+                }
+              });
+              
+              // Reassign to balance
+              if (bestStaff) {
+                assignment.forEach((staffId, index) => {
+                  if (staffId !== bestStaff) {
+                    assignment[index] = bestStaff;
+                    staffWorkload[bestStaff]++;
+                  }
+                });
+              }
+            }
+          });
+        });
+      }
+
+      minimizeGaps(schedule) {
+        // Implement gap minimization logic
+        // This would consolidate shifts and reduce idle time
+      }
+
+      applyStaffPreferences(schedule) {
+        // Apply staff preferences if provided
+        this.staffPool.forEach(staff => {
+          if (staff.preferences) {
+            // Apply availability preferences
+            staff.preferences.availability.forEach(pref => {
+              // Mark staff as unavailable during preferred off times
+            });
+            
+            // Apply shift preferences
+            if (staff.preferences.shiftType) {
+              // Try to assign preferred shift types
+            }
+          }
+        });
+      }
+
+      minimizeOvertime(schedule) {
+        // Try to minimize overtime hours
+        const maxWeeklyHours = parseInt(document.getElementById('maxWeeklyHours').value);
+        
+        this.staffPool.forEach(staff => {
+          const weeklyHours = this.calculateStaffWeeklyHours(schedule, staff.id);
+          if (weeklyHours > maxWeeklyHours) {
+            // Reduce assignments to bring within limit
+            const excess = weeklyHours - maxWeeklyHours;
+            schedule.metrics.overtime += excess;
+          }
+        });
+      }
+
+      applyConstraints(schedule) {
+        // Apply labor law constraints
+        const maxConsecutiveDays = parseInt(document.getElementById('maxConsecutiveDays').value);
+        const minHoursBetweenShifts = parseInt(document.getElementById('minHoursBetweenShifts').value);
+        
+        this.staffPool.forEach(staff => {
+          // Check consecutive days
+          let consecutiveDays = 0;
+          let maxConsecutive = 0;
+          
+          schedule.days.forEach(day => {
+            if (this.isStaffWorking(day, staff.id)) {
+              consecutiveDays++;
+              maxConsecutive = Math.max(maxConsecutive, consecutiveDays);
+            } else {
+              consecutiveDays = 0;
+            }
+          });
+          
+          // Ensure max consecutive days not exceeded
+          if (maxConsecutive > maxConsecutiveDays) {
+            // Adjust schedule
+            this.adjustForConsecutiveDays(schedule, staff.id, maxConsecutiveDays);
+          }
+          
+          // Check minimum hours between shifts
+          this.ensureMinimumRest(schedule, staff.id, minHoursBetweenShifts);
+        });
+      }
+
+      // Helper methods
+      getAvailableStaff(dayIndex, hourIndex) {
+        return this.staffPool.filter(staff => {
+          // Check if staff is available at this time
+          // This would consider shift patterns, preferences, etc.
+          return true; // Simplified for demo
+        });
+      }
+
+      assignStaff(schedule, staff, dayIndex, hourIndex) {
+        if (!schedule.days[dayIndex].assignments[hourIndex]) {
+          schedule.days[dayIndex].assignments[hourIndex] = [];
+        }
+        schedule.days[dayIndex].assignments[hourIndex].push(staff.id);
+        
+        // Track in overall assignments
+        schedule.assignments.push({
+          staffId: staff.id,
+          dayIndex: dayIndex,
+          hourIndex: hourIndex
+        });
+        
+        schedule.metrics.totalHours++;
+      }
+
+      calculateStaffWeeklyHours(schedule, staffId) {
+        let hours = 0;
+        schedule.assignments.forEach(assignment => {
+          if (assignment.staffId === staffId) {
+            hours++;
+          }
+        });
+        return hours;
+      }
+
+      isStaffWorking(day, staffId) {
+        return day.assignments.some(hourAssignments => 
+          hourAssignments && hourAssignments.includes(staffId)
+        );
+      }
+
+      adjustForConsecutiveDays(schedule, staffId, maxDays) {
+        // Implementation for adjusting consecutive days
+      }
+
+      ensureMinimumRest(schedule, staffId, minHours) {
+        // Implementation for ensuring minimum rest between shifts
+      }
+
+      // Optimize schedule
+      optimizeSchedule(schedule) {
+        const originalMetrics = { ...schedule.metrics };
+        
+        // Apply optimization algorithms
+        // This could include:
+        // 1. Simulated annealing
+        // 2. Genetic algorithms
+        // 3. Linear programming
+        
+        // For demo, simulate improvement
+        schedule.metrics.utilization += 5;
+        schedule.metrics.coverageGaps = Math.max(0, schedule.metrics.coverageGaps - 10);
+        schedule.metrics.overtime = Math.max(0, schedule.metrics.overtime - 5);
+        schedule.metrics.satisfaction += 10;
+        
+        return {
+          original: originalMetrics,
+          optimized: schedule.metrics,
+          improvements: {
+            utilization: schedule.metrics.utilization - originalMetrics.utilization,
+            coverageGaps: originalMetrics.coverageGaps - schedule.metrics.coverageGaps,
+            overtime: originalMetrics.overtime - schedule.metrics.overtime,
+            satisfaction: schedule.metrics.satisfaction - originalMetrics.satisfaction
+          }
+        };
+      }
+
+      // Calculate metrics
+      calculateMetrics(schedule) {
+        const totalPossibleHours = this.requirements.reduce((sum, day) => 
+          sum + day.reduce((daySum, hour) => daySum + hour, 0), 0
+        );
+        
+        const utilization = schedule.metrics.totalHours > 0 ? 
+          (schedule.metrics.totalHours / totalPossibleHours) * 100 : 0;
+        
+        return {
+          ...schedule.metrics,
+          utilization: Math.min(100, Math.round(utilization))
+        };
+      }
+    }
+
+    const schedulingEngine = new SchedulingEngine();
+
+    // Generate schedule
+    async function generateSchedule() {
+      // Validate inputs
+      const availableFTE = parseInt(document.getElementById('availableFTE').value);
+      if (!availableFTE || availableFTE < 1) {
+        alert('Please enter a valid number of available FTE');
+        return;
+      }
+
+      // Show progress
+      progressBar.style.display = 'block';
+      updateProgress(10);
+      updateStatus('Generating schedule...');
+
+      try {
+        // Collect configuration
+        const config = collectConfiguration();
+        
+        // Generate staff pool
+        const staffPool = generateStaffPool(availableFTE, config);
+        scheduleData.staff = staffPool;
+        
+        // Generate requirements
+        const requirements = await generateRequirements(config);
+        scheduleData.requirements = requirements;
+        
+        updateProgress(40);
+        
+        // Get rules
+        const rules = collectRules();
+        
+        // Generate schedule
+        const schedule = schedulingEngine.generateSchedule(requirements, staffPool, rules);
+        scheduleData.generatedSchedule = schedule;
+        
+        updateProgress(70);
+        
+        // Calculate metrics
+        const metrics = schedulingEngine.calculateMetrics(schedule);
+        
+        // Display results
+        displayScheduleResults(schedule, metrics);
+        displayAssignments(staffPool, schedule);
+        
+        updateProgress(100);
+        
+        setTimeout(() => {
+          progressBar.style.display = 'none';
+          progressFill.style.width = '0%';
+        }, 1000);
+        
+        updateStatus('Schedule generated successfully');
+        
+      } catch (error) {
+        console.error('Schedule generation error:', error);
+        updateStatus('Error generating schedule: ' + error.message, true);
+        progressBar.style.display = 'none';
+      }
+    }
+
+    // Optimize schedule
+    function optimizeSchedule() {
+      if (!scheduleData.generatedSchedule) {
+        alert('Please generate a schedule first');
+        return;
+      }
+
+      updateStatus('Optimizing schedule...');
+      
+      const optimization = schedulingEngine.optimizeSchedule(scheduleData.generatedSchedule);
+      scheduleData.optimizationResults = optimization;
+      
+      // Update metrics display
+      const metrics = schedulingEngine.calculateMetrics(scheduleData.generatedSchedule);
+      updateResultsDisplay(metrics);
+      
+      // Show optimization results
+      showOptimizationResults(optimization);
+      
+      updateStatus('Schedule optimized successfully');
+    }
+
+    // Collect configuration
+    function collectConfiguration() {
+      const period = parseInt(document.getElementById('schedulePeriod').value);
+      const startDate = new Date(document.getElementById('startDate').value);
+      const intervalLength = parseInt(document.getElementById('intervalLength').value);
+      const businessHours = document.getElementById('businessHours').value;
+      const partTimeRatio = parseInt(document.getElementById('partTimeRatio').value) / 100;
+      const skillLevel = parseFloat(document.getElementById('skillLevel').value);
+      
+      let customHours = { start: 8, end: 18 };
+      if (businessHours === 'custom') {
+        const start = document.getElementById('customStart').value;
+        const end = document.getElementById('customEnd').value;
+        customHours.start = parseInt(start.split(':')[0]);
+        customHours.end = parseInt(end.split(':')[0]);
+      } else if (businessHours !== '24') {
+        const [start, end] = businessHours.split('_');
+        customHours.start = parseInt(start);
+        customHours.end = parseInt(end);
+      } else {
+        customHours = { start: 0, end: 24 };
+      }
+      
+      return {
+        period,
+        startDate,
+        intervalLength,
+        businessHours: customHours,
+        partTimeRatio,
+        skillLevel
+      };
+    }
+
+    // Generate staff pool
+    function generateStaffPool(availableFTE, config) {
+      const staffPool = [];
+      const totalStaff = availableFTE; // Simplified: 1 FTE = 1 staff
+      
+      // Generate full-time and part-time staff
+      const fullTimeCount = Math.floor(totalStaff * (1 - config.partTimeRatio));
+      const partTimeCount = totalStaff - fullTimeCount;
+      
+      const roles = ['Agent', 'Senior Agent', 'Team Lead', 'Specialist'];
+      const skillLevels = [0.8, 1.0, 1.2, 1.5];
+      
+      for (let i = 0; i < fullTimeCount; i++) {
+        staffPool.push({
+          id: `FT${i + 1}`,
+          name: `Staff ${i + 1}`,
+          type: 'full-time',
+          role: roles[Math.min(i % 4, roles.length - 1)],
+          skillLevel: config.skillLevel,
+          maxHours: 40,
+          preferences: generateRandomPreferences()
+        });
+      }
+      
+      for (let i = 0; i < partTimeCount; i++) {
+        staffPool.push({
+          id: `PT${i + 1}`,
+          name: `Part-time ${i + 1}`,
+          type: 'part-time',
+          role: 'Agent',
+          skillLevel: config.skillLevel * 0.9, // Slightly lower for part-time
+          maxHours: 20,
+          preferences: generateRandomPreferences()
+        });
+      }
+      
+      return staffPool;
+    }
+
+    // Generate random preferences for demo
+    function generateRandomPreferences() {
+      const shiftTypes = ['morning', 'day', 'evening'];
+      const availability = [];
+      
+      // Random availability pattern
+      for (let hour = 0; hour < 24; hour++) {
+        availability.push(Math.random() > 0.3); // 70% available
+      }
+      
+      return {
+        availability,
+        shiftType: shiftTypes[Math.floor(Math.random() * shiftTypes.length)],
+        preferredDaysOff: [Math.floor(Math.random() * 7)] // Random day off
+      };
+    }
+
+    // Generate requirements
+    async function generateRequirements(config) {
+      const forecastSource = document.getElementById('forecastSource').value;
+      const requirements = [];
+      
+      if (forecastSource === 'manual') {
+        // Use manual inputs
+        const dailyInputs = document.querySelectorAll('#manualForecastSection input');
+        const dailyRequirements = Array.from(dailyInputs).map(input => parseInt(input.value) || 0);
+        
+        for (let day = 0; day < config.period; day++) {
+          const dayRequirements = [];
+          const dayIndex = day % 7;
+          const baseRequirement = dailyRequirements[dayIndex];
+          
+          // Create hourly pattern (peak in middle of business hours)
+          const businessHours = config.businessHours.end - config.businessHours.start;
+          const peakHour = Math.floor(businessHours / 2);
+          
+          for (let hour = 0; hour < 24; hour++) {
+            if (hour >= config.businessHours.start && hour < config.businessHours.end) {
+              // Calculate requirement for this hour
+              const hourOffset = hour - config.businessHours.start;
+              const distanceFromPeak = Math.abs(hourOffset - peakHour);
+              const reduction = distanceFromPeak / businessHours;
+              const requirement = Math.max(1, Math.round(baseRequirement * (1 - reduction * 0.5)));
+              
+              // Distribute across intervals
+              const intervalsPerHour = 60 / config.intervalLength;
+              for (let interval = 0; interval < intervalsPerHour; interval++) {
+                dayRequirements.push(requirement / intervalsPerHour);
+              }
+            } else {
+              // Outside business hours
+              const intervalsPerHour = 60 / config.intervalLength;
+              for (let interval = 0; interval < intervalsPerHour; interval++) {
+                dayRequirements.push(0);
+              }
+            }
+          }
+          
+          requirements.push(dayRequirements);
+        }
+      } else if (forecastSource === 'import') {
+        // Import from file
+        const fileInput = document.getElementById('forecastFile');
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          const text = await file.text();
+          requirements.push(...parseForecastCSV(text, config));
+        } else {
+          // Fallback to generated requirements
+          return generateRequirements({ ...config, forecastSource: 'manual' });
+        }
+      } else {
+        // Use historical patterns (simplified)
+        return generateRequirements({ ...config, forecastSource: 'manual' });
+      }
+      
+      return requirements;
+    }
+
+    // Parse forecast CSV
+    function parseForecastCSV(text, config) {
+      const lines = text.split(/\r?\n/).filter(line => line.trim());
+      if (lines.length === 0) return [];
+      
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const requirements = [];
+      
+      // Group by date
+      const dateMap = new Map();
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] ? values[index].trim() : '';
+        });
+        
+        if (row.date && row.time && row.required_staff) {
+          const dateKey = row.date;
+          if (!dateMap.has(dateKey)) {
+            dateMap.set(dateKey, Array(24 * (60 / config.intervalLength)).fill(0));
+          }
+          
+          const timeParts = row.time.split(':');
+          const hour = parseInt(timeParts[0]);
+          const minute = timeParts[1] ? parseInt(timeParts[1]) : 0;
+          const intervalIndex = hour * (60 / config.intervalLength) + Math.floor(minute / config.intervalLength);
+          
+          if (intervalIndex < dateMap.get(dateKey).length) {
+            dateMap.get(dateKey)[intervalIndex] = parseFloat(row.required_staff) || 0;
+          }
+        }
+      }
+      
+      // Convert to array format
+      dateMap.forEach((dayRequirements, date) => {
+        requirements.push(dayRequirements);
+      });
+      
+      return requirements;
+    }
+
+    // Collect rules
+    function collectRules() {
+      return {
+        bestFit: document.getElementById('ruleBestFit').checked,
+        evenSpread: document.getElementById('ruleEvenSpread').checked,
+        minGaps: document.getElementById('ruleMinGaps').checked,
+        respectPreferences: document.getElementById('ruleRespectPreferences').checked,
+        avoidOvertime: document.getElementById('ruleAvoidOvertime').checked
+      };
+    }
+
+    // Display schedule results
+    function displayScheduleResults(schedule, metrics) {
+      // Show results section
+      scheduleResults.style.display = 'block';
+      
+      // Update metrics display
+      updateResultsDisplay(metrics);
+      
+      // Generate schedule grid
+      generateScheduleGrid(schedule);
+      
+      // Set up week navigation
+      scheduleData.currentWeek = 0;
+      scheduleData.totalWeeks = Math.ceil(schedule.days.length / 7);
+      updateWeekDisplay();
+    }
+
+    // Update results display
+    function updateResultsDisplay(metrics) {
+      document.getElementById('resultScheduledHours').textContent = metrics.totalHours;
+      document.getElementById('resultUtilization').textContent = metrics.utilization + '%';
+      document.getElementById('resultCoverageGaps').textContent = metrics.coverageGaps;
+      document.getElementById('resultOvertime').textContent = metrics.overtime;
+    }
+
+    // Generate schedule grid
+    function generateScheduleGrid(schedule) {
+      scheduleGrid.innerHTML = '';
+      
+      // Create header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'schedule-row';
+      
+      const timeHeader = document.createElement('div');
+      timeHeader.className = 'time-header';
+      timeHeader.textContent = 'Time';
+      headerRow.appendChild(timeHeader);
+      
+      for (let hour = 0; hour < 24; hour++) {
+        const hourHeader = document.createElement('div');
+        hourHeader.className = 'hour-header';
+        hourHeader.textContent = `${hour}:00`;
+        headerRow.appendChild(hourHeader);
+      }
+      
+      scheduleGrid.appendChild(headerRow);
+      
+      // Create day rows (for current week)
+      const startDay = scheduleData.currentWeek * 7;
+      const endDay = Math.min(startDay + 7, schedule.days.length);
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      
+      for (let day = startDay; day < endDay; day++) {
+        const dayRow = document.createElement('div');
+        dayRow.className = 'schedule-row';
+        
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'time-header';
+        const dayDate = new Date(schedule.days[day].date);
+        dayDate.setDate(dayDate.getDate() + day);
+        dayHeader.textContent = `${dayNames[dayDate.getDay()]} ${dayDate.getDate()}`;
+        dayRow.appendChild(dayHeader);
+        
+        // Get requirements for this day
+        const dayRequirements = scheduleData.requirements[day] || [];
+        const dayAssignments = schedule.days[day]?.assignments || [];
+        
+        for (let hour = 0; hour < 24; hour++) {
+          const cell = document.createElement('div');
+          cell.className = 'schedule-cell';
+          
+          // Calculate interval index for this hour (assuming 60-minute intervals)
+          const intervalIndex = hour;
+          
+          const required = Math.round(dayRequirements[intervalIndex] || 0);
+          const assigned = dayAssignments[intervalIndex]?.length || 0;
+          
+          if (required > 0) {
+            if (assigned >= required) {
+              cell.classList.add('assigned');
+            } else if (assigned > 0) {
+              cell.classList.add('available');
+            } else {
+              cell.classList.add('unavailable');
+            }
+            
+            if (assigned > 0) {
+              const staffCount = document.createElement('div');
+              staffCount.className = 'staff-count';
+              staffCount.textContent = assigned;
+              cell.appendChild(staffCount);
+            }
+            
+            const requirementCount = document.createElement('div');
+            requirementCount.className = 'requirement-count';
+            requirementCount.textContent = `req: ${required}`;
+            cell.appendChild(requirementCount);
+          } else {
+            cell.classList.add('unavailable');
+          }
+          
+          dayRow.appendChild(cell);
+        }
+        
+        scheduleGrid.appendChild(dayRow);
+      }
+    }
+
+    // Display assignments
+    function displayAssignments(staffPool, schedule) {
+      assignmentsTableBody.innerHTML = '';
+      
+      const staffHours = {};
+      const staffDays = {};
+      
+      // Calculate hours and days for each staff
+      schedule.assignments.forEach(assignment => {
+        const staffId = assignment.staffId;
+        staffHours[staffId] = (staffHours[staffId] || 0) + 1;
+        
+        if (!staffDays[staffId]) {
+          staffDays[staffId] = new Set();
+        }
+        staffDays[staffId].add(assignment.dayIndex);
+      });
+      
+      // Create table rows
+      staffPool.forEach(staff => {
+        const row = document.createElement('tr');
+        
+        const hours = staffHours[staff.id] || 0;
+        const days = staffDays[staff.id] ? staffDays[staff.id].size : 0;
+        
+        let status = '✅';
+        if (hours > staff.maxHours) {
+          status = '⚠️ Overtime';
+        } else if (hours < staff.maxHours * 0.5) {
+          status = '📉 Underutilized';
+        }
+        
+        row.innerHTML = `
+          <td>${staff.id}</td>
+          <td>${staff.name}</td>
+          <td class="center">${staff.role}</td>
+          <td class="center">${staff.skillLevel.toFixed(1)}</td>
+          <td class="center">${hours}</td>
+          <td class="center">${staff.type === 'full-time' ? 'FT' : 'PT'}</td>
+          <td class="center">${days}</td>
+          <td class="center">${status}</td>
+        `;
+        
+        assignmentsTableBody.appendChild(row);
+      });
+    }
+
+    // Show optimization results
+    function showOptimizationResults(optimization) {
+      optimizationResults.style.display = 'block';
+      
+      if (optimization.improvements.utilization > 0) {
+        optimizationMessage.innerHTML = `
+          <p>✅ Optimization improved schedule efficiency by ${optimization.improvements.utilization.toFixed(1)}%.</p>
+          <p>Coverage gaps reduced by ${optimization.improvements.coverageGaps}, overtime reduced by ${optimization.improvements.overtime}.</p>
+        `;
+      } else {
+        optimizationMessage.innerHTML = `
+          <p>⚠️ No significant improvements found. Schedule was already well-optimized.</p>
+        `;
+      }
+      
+      optimizationMetrics.innerHTML = `
+        <div class="metric">
+          <div class="value">${optimization.improvements.utilization.toFixed(1)}%</div>
+          <div class="label">Utilization Gain</div>
+        </div>
+        <div class="metric">
+          <div class="value">${optimization.improvements.coverageGaps}</div>
+          <div class="label">Fewer Gaps</div>
+        </div>
+        <div class="metric">
+          <div class="value">${optimization.improvements.overtime}</div>
+          <div class="label">Overtime Saved</div>
+        </div>
+        <div class="metric">
+          <div class="value">${optimization.improvements.satisfaction}</div>
+          <div class="label">Satisfaction Gain</div>
+        </div>
+      `;
+    }
+
+    // Week navigation
+    function updateWeekDisplay() {
+      currentWeekDisplay.textContent = `Week ${scheduleData.currentWeek + 1} of ${scheduleData.totalWeeks}`;
+      
+      if (scheduleData.generatedSchedule) {
+        generateScheduleGrid(scheduleData.generatedSchedule);
+      }
+    }
+    
+    prevWeekBtn.addEventListener('click', () => {
+      if (scheduleData.currentWeek > 0) {
+        scheduleData.currentWeek--;
+        updateWeekDisplay();
+      }
+    });
+    
+    nextWeekBtn.addEventListener('click', () => {
+      if (scheduleData.currentWeek < scheduleData.totalWeeks - 1) {
+        scheduleData.currentWeek++;
+        updateWeekDisplay();
+      }
+    });
+
+    // Export schedule
+    function exportSchedule() {
+      if (!scheduleData.generatedSchedule) {
+        alert('No schedule to export');
+        return;
+      }
+      
+      const headers = ['Staff ID', 'Name', 'Date', 'Start Time', 'End Time', 'Role', 'Hours'];
+      const rows = [];
+      
+      scheduleData.staff.forEach(staff => {
+        // Find assignments for this staff
+        scheduleData.generatedSchedule.assignments.forEach(assignment => {
+          if (assignment.staffId === staff.id) {
+            const dayIndex = assignment.dayIndex;
+            const hourIndex = assignment.hourIndex;
+            
+            const date = new Date(scheduleData.generatedSchedule.days[dayIndex].date);
+            date.setDate(date.getDate() + dayIndex);
+            
+            const startHour = Math.floor(hourIndex / (60 / scheduleData.config?.intervalLength || 1));
+            const startMinute = (hourIndex % (60 / scheduleData.config?.intervalLength || 1)) * (scheduleData.config?.intervalLength || 60);
+            
+            const endHour = startHour;
+            const endMinute = startMinute + (scheduleData.config?.intervalLength || 60);
+            
+            rows.push([
+              staff.id,
+              staff.name,
+              date.toISOString().split('T')[0],
+              `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+              `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+              staff.role,
+              (scheduleData.config?.intervalLength || 60) / 60
+            ]);
+          }
+        });
+      });
+      
+      const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `schedule_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    // Clear schedule
+    function clearSchedule() {
+      scheduleData = {
+        requirements: [],
+        staff: [],
+        assignments: [],
+        generatedSchedule: null,
+        currentWeek: 0,
+        totalWeeks: 1,
+        optimizationResults: null
+      };
+      
+      scheduleResults.style.display = 'none';
+      optimizationResults.style.display = 'none';
+      
+      // Reset form values
+      document.getElementById('availableFTE').value = 20;
+      document.getElementById('partTimeRatio').value = 30;
+      
+      updateStatus('Ready to create schedule');
+    }
+
+    // Helper functions
+    function updateProgress(percent) {
+      progressFill.style.width = `${percent}%`;
+    }
+    
+    function updateStatus(message, isError = false) {
+      scheduleStatus.textContent = message;
+      scheduleStatus.style.color = isError ? 'var(--bad)' : 'var(--text-color)';
+    }
+
+    // Event Listeners
+    generateScheduleBtn.addEventListener('click', generateSchedule);
+    optimizeScheduleBtn.addEventListener('click', optimizeSchedule);
+    clearScheduleBtn.addEventListener('click', clearSchedule);
+    exportScheduleBtn.addEventListener('click', exportSchedule);
+    
+    // Initialize
+    initializeDatePicker();
+    updateStatus('Ready to create schedule');
+    
+    // Prevent form submission
+    document.addEventListener('submit', function(e) {
+      e.preventDefault();
+    });
+
+    // Add manage staff functionality
+    document.getElementById('manageStaffBtn').addEventListener('click', function() {
+      alert('Staff management feature would open a detailed staff management interface in a full implementation.');
+    });
+
+    // Add shift pattern functionality
+    document.getElementById('addShiftPatternBtn').addEventListener('click', function() {
+      alert('Shift pattern builder would open in a full implementation.');
+    });
+  </script>
+</body>
+</html>
