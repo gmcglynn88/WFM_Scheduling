@@ -1611,7 +1611,6 @@
     const optimizeScheduleBtn = document.getElementById('optimizeScheduleBtn');
     const clearScheduleBtn = document.getElementById('clearScheduleBtn');
     const exportScheduleBtn = document.getElementById('exportScheduleBtn');
-    const scheduleResults = document.getElementById('scheduleResults');
     const progressBar = document.getElementById('progressBar');
     const progressFill = document.getElementById('progressFill');
     const businessHoursSelect = document.getElementById('businessHours');
@@ -2361,6 +2360,136 @@
 
     const schedulingEngine = new SchedulingEngine();
 
+    // Generate requirements function (MISSING FUNCTION ADDED)
+    async function generateRequirements(config) {
+      const forecastSource = document.getElementById('forecastSource').value;
+      const requirements = [];
+      const period = config.period;
+      
+      if (forecastSource === 'manual') {
+        // Use manual inputs
+        const dailyInputs = document.querySelectorAll('#manualForecastSection input');
+        const dailyRequirements = Array.from(dailyInputs).map(input => parseInt(input.value) || 0);
+        
+        for (let day = 0; day < period; day++) {
+          const dayRequirements = [];
+          const dayIndex = day % 7;
+          const baseRequirement = dailyRequirements[dayIndex];
+          
+          // Create hourly pattern (peak in middle of business hours)
+          const businessHours = config.businessHours.end - config.businessHours.start;
+          const peakHour = Math.floor(businessHours / 2);
+          
+          for (let hour = 0; hour < 24; hour++) {
+            if (hour >= config.businessHours.start && hour < config.businessHours.end) {
+              // Calculate requirement for this hour
+              const hourOffset = hour - config.businessHours.start;
+              const distanceFromPeak = Math.abs(hourOffset - peakHour);
+              const reduction = distanceFromPeak / businessHours;
+              const requirement = Math.max(1, Math.round(baseRequirement * (1 - reduction * 0.5)));
+              
+              // Distribute across intervals
+              const intervalsPerHour = 60 / config.intervalLength;
+              for (let interval = 0; interval < intervalsPerHour; interval++) {
+                dayRequirements.push(requirement / intervalsPerHour);
+              }
+            } else {
+              // Outside business hours
+              const intervalsPerHour = 60 / config.intervalLength;
+              for (let interval = 0; interval < intervalsPerHour; interval++) {
+                dayRequirements.push(0);
+              }
+            }
+          }
+          
+          requirements.push(dayRequirements);
+        }
+      } else if (forecastSource === 'import') {
+        // Import from file
+        const fileInput = document.getElementById('forecastFile');
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          const text = await file.text();
+          return parseForecastCSV(text, config);
+        } else {
+          // Fallback to generated requirements
+          return generateRequirements({ ...config, forecastSource: 'manual' });
+        }
+      } else {
+        // Use historical patterns (simplified)
+        return generateRequirements({ ...config, forecastSource: 'manual' });
+      }
+      
+      return requirements;
+    }
+
+    // Parse forecast CSV
+    function parseForecastCSV(text, config) {
+      const lines = text.split(/\r?\n/).filter(line => line.trim());
+      if (lines.length === 0) return [];
+      
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const requirements = [];
+      
+      // Group by date
+      const dateMap = new Map();
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] ? values[index].trim() : '';
+        });
+        
+        if (row.date && row.time && row.required_staff) {
+          const dateKey = row.date;
+          if (!dateMap.has(dateKey)) {
+            dateMap.set(dateKey, Array(24 * (60 / config.intervalLength)).fill(0));
+          }
+          
+          const timeParts = row.time.split(':');
+          const hour = parseInt(timeParts[0]);
+          const minute = timeParts[1] ? parseInt(timeParts[1]) : 0;
+          const intervalIndex = hour * (60 / config.intervalLength) + Math.floor(minute / config.intervalLength);
+          
+          if (intervalIndex < dateMap.get(dateKey).length) {
+            // Sum requirements across all queues
+            const currentValue = dateMap.get(dateKey)[intervalIndex] || 0;
+            const newValue = parseFloat(row.required_staff) || 0;
+            dateMap.get(dateKey)[intervalIndex] = currentValue + newValue;
+          }
+        }
+      }
+      
+      // Convert to array format (only take as many days as needed)
+      const period = parseInt(document.getElementById('schedulePeriod').value);
+      const sortedDates = Array.from(dateMap.keys()).sort();
+      
+      for (let i = 0; i < Math.min(period, sortedDates.length); i++) {
+        const dateKey = sortedDates[i];
+        requirements.push(dateMap.get(dateKey));
+      }
+      
+      // If we have fewer days than period, duplicate the last day
+      while (requirements.length < period) {
+        const lastDay = requirements[requirements.length - 1] || Array(24 * (60 / config.intervalLength)).fill(0);
+        requirements.push([...lastDay]);
+      }
+      
+      return requirements;
+    }
+
+    // Collect rules
+    function collectRules() {
+      return {
+        bestFit: document.getElementById('ruleBestFit').checked,
+        evenSpread: document.getElementById('ruleEvenSpread').checked,
+        minGaps: document.getElementById('ruleMinGaps').checked,
+        respectPreferences: document.getElementById('ruleRespectPreferences').checked,
+        avoidOvertime: document.getElementById('ruleAvoidOvertime').checked
+      };
+    }
+
     // Generate schedule
     async function generateSchedule() {
       const activeAgents = agents.filter(agent => 
@@ -2496,7 +2625,7 @@
       });
     }
 
-    // Update existing functions to use agents data
+    // Collect configuration
     function collectConfiguration() {
       const period = parseInt(document.getElementById('schedulePeriod').value);
       const startDate = new Date(document.getElementById('startDate').value);
@@ -2527,12 +2656,107 @@
 
     // Display schedule results
     function displayScheduleResults(schedule, metrics) {
+      // Update metrics display
       updateResultsDisplay(metrics);
+      
+      // Generate schedule grid
       generateScheduleGrid(schedule);
       
+      // Set up week navigation
       scheduleData.currentWeek = 0;
       scheduleData.totalWeeks = Math.ceil(schedule.days.length / 7);
       updateWeekDisplay();
+    }
+
+    // Update results display
+    function updateResultsDisplay(metrics) {
+      document.getElementById('resultScheduledHours').textContent = metrics.totalHours;
+      document.getElementById('resultUtilization').textContent = metrics.utilization + '%';
+      document.getElementById('resultCoverageGaps').textContent = metrics.coverageGaps;
+      document.getElementById('resultOvertime').textContent = metrics.overtime;
+    }
+
+    // Generate schedule grid
+    function generateScheduleGrid(schedule) {
+      scheduleGrid.innerHTML = '';
+      
+      // Create header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'schedule-row';
+      
+      const timeHeader = document.createElement('div');
+      timeHeader.className = 'time-header';
+      timeHeader.textContent = 'Time';
+      headerRow.appendChild(timeHeader);
+      
+      for (let hour = 0; hour < 24; hour++) {
+        const hourHeader = document.createElement('div');
+        hourHeader.className = 'hour-header';
+        hourHeader.textContent = `${hour}:00`;
+        headerRow.appendChild(hourHeader);
+      }
+      
+      scheduleGrid.appendChild(headerRow);
+      
+      // Create day rows (for current week)
+      const startDay = scheduleData.currentWeek * 7;
+      const endDay = Math.min(startDay + 7, schedule.days.length);
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      
+      for (let day = startDay; day < endDay; day++) {
+        const dayRow = document.createElement('div');
+        dayRow.className = 'schedule-row';
+        
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'time-header';
+        const dayDate = new Date(schedule.days[day].date);
+        dayDate.setDate(dayDate.getDate() + day);
+        dayHeader.textContent = `${dayNames[dayDate.getDay()]} ${dayDate.getDate()}`;
+        dayRow.appendChild(dayHeader);
+        
+        // Get requirements for this day
+        const dayRequirements = scheduleData.requirements[day] || [];
+        const dayAssignments = schedule.days[day]?.assignments || [];
+        
+        for (let hour = 0; hour < 24; hour++) {
+          const cell = document.createElement('div');
+          cell.className = 'schedule-cell';
+          
+          // Calculate interval index for this hour (assuming 60-minute intervals)
+          const intervalIndex = hour;
+          
+          const required = Math.round(dayRequirements[intervalIndex] || 0);
+          const assigned = dayAssignments[intervalIndex]?.length || 0;
+          
+          if (required > 0) {
+            if (assigned >= required) {
+              cell.classList.add('assigned');
+            } else if (assigned > 0) {
+              cell.classList.add('available');
+            } else {
+              cell.classList.add('unavailable');
+            }
+            
+            if (assigned > 0) {
+              const staffCount = document.createElement('div');
+              staffCount.className = 'staff-count';
+              staffCount.textContent = assigned;
+              cell.appendChild(staffCount);
+            }
+            
+            const requirementCount = document.createElement('div');
+            requirementCount.className = 'requirement-count';
+            requirementCount.textContent = `req: ${required}`;
+            cell.appendChild(requirementCount);
+          } else {
+            cell.classList.add('unavailable');
+          }
+          
+          dayRow.appendChild(cell);
+        }
+        
+        scheduleGrid.appendChild(dayRow);
+      }
     }
 
     // Display assignments
@@ -2578,11 +2802,21 @@
       });
     }
 
-    // Update the rest of the existing functions...
+    // Update week display
+    function updateWeekDisplay() {
+      currentWeekDisplay.textContent = `Week ${scheduleData.currentWeek + 1} of ${scheduleData.totalWeeks}`;
+      
+      if (scheduleData.generatedSchedule) {
+        generateScheduleGrid(scheduleData.generatedSchedule);
+      }
+    }
+
+    // Update progress
     function updateProgress(percent) {
       progressFill.style.width = `${percent}%`;
     }
     
+    // Update status
     function updateStatus(message, isError = false) {
       scheduleStatus.textContent = message;
       scheduleStatus.style.color = isError ? 'var(--bad)' : 'var(--text-color)';
