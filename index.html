@@ -2191,6 +2191,8 @@
     const confirmPublishBtn = document.getElementById('confirmPublishBtn');
     const cancelPublishBtn = document.getElementById('cancelPublishBtn');
     const saveIndicator = document.getElementById('saveIndicator');
+    const opportunitiesList = document.getElementById('opportunitiesList');
+    const overtimeOpportunities = document.getElementById('overtimeOpportunities');
 
     // Tabs
     const tabs = document.querySelectorAll('.tab');
@@ -2213,7 +2215,6 @@
     };
 
     // ====== AGENT MANAGEMENT ======
-    // (Your existing agent management code remains unchanged)
     // Agent data storage
     let agents = [];
     let currentEditId = null;
@@ -2754,23 +2755,28 @@
         const schedule = this.createInitialSchedule();
         const agentSchedules = this.generateAgentSchedules(staffPool, schedule);
         
-        // Apply rules
-        if (rules.bestFit) {
-          this.applyBestFit(schedule, agentSchedules);
-        }
+        // Create basic assignments
+        this.createBasicAssignments(schedule, agentSchedules);
         
+        // Apply rules if enabled
         if (rules.evenSpread) {
           this.applyEvenSpread(schedule, agentSchedules);
         }
         
+        if (rules.bestFit) {
+          this.applyBestFit(schedule, agentSchedules);
+        }
+        
         if (rules.respectPreferences) {
-          this.applyStaffPreferences(agentSchedules);
+          // Simplified: just respect contracted hours
+          this.respectContractedHours(agentSchedules);
         }
         
         if (rules.avoidOvertime) {
           this.minimizeOvertime(agentSchedules);
         }
         
+        // Apply constraints
         this.applyConstraints(agentSchedules);
         
         // Generate overtime opportunities if enabled
@@ -2862,9 +2868,8 @@
               working: false
             };
             
-            // Determine if agent works this day
-            const dayOfWeek = day % 7;
-            const shouldWork = day % Math.ceil(7 / daysPerWeek) < daysPerWeek;
+            // Determine if agent works this day (simple pattern)
+            const shouldWork = day % 7 < daysPerWeek; // Work first X days of each week
             
             if (shouldWork) {
               daySchedule.working = true;
@@ -2877,9 +2882,10 @@
               // Add Inbound activities with breaks
               let currentHour = startHour;
               let hoursSinceBreak = 0;
+              let lunchAdded = false;
               
               while (currentHour < endHour) {
-                if (hoursSinceBreak >= breakFrequency && currentHour < endHour - lunchDuration) {
+                if (hoursSinceBreak >= breakFrequency && currentHour < endHour - 0.25) {
                   // Add break
                   daySchedule.activities.push({
                     start: currentHour,
@@ -2889,7 +2895,7 @@
                   });
                   currentHour += 0.25;
                   hoursSinceBreak = 0;
-                } else if (currentHour >= startHour + shiftHours/2 - lunchDuration/2 && 
+                } else if (!lunchAdded && currentHour >= startHour + shiftHours/2 - lunchDuration/2 && 
                           currentHour < startHour + shiftHours/2 + lunchDuration/2) {
                   // Add lunch
                   daySchedule.activities.push({
@@ -2900,6 +2906,7 @@
                   });
                   currentHour += lunchDuration;
                   hoursSinceBreak = 0;
+                  lunchAdded = true;
                 } else {
                   // Add Inbound work
                   const activityDuration = Math.min(1, endHour - currentHour);
@@ -2925,62 +2932,279 @@
         return agentSchedules;
       }
 
+      createBasicAssignments(schedule, agentSchedules) {
+        // Create basic assignments based on agent schedules
+        schedule.days.forEach((day, dayIndex) => {
+          const intervalsPerHour = 60 / this.intervalLength;
+          const totalIntervals = 24 * intervalsPerHour;
+          
+          // Initialize assignments array for this day
+          day.assignments = Array(totalIntervals).fill().map(() => []);
+          
+          // For each agent, add them to assignments during their inbound activities
+          agentSchedules.forEach(agentSchedule => {
+            const daySchedule = agentSchedule.schedule[dayIndex];
+            if (daySchedule.working) {
+              daySchedule.activities.forEach(activity => {
+                if (activity.type === 'inbound') {
+                  // Add agent to each interval during this activity
+                  const startInterval = Math.floor(activity.start * intervalsPerHour);
+                  const endInterval = Math.floor(activity.end * intervalsPerHour);
+                  
+                  for (let interval = startInterval; interval < endInterval; interval++) {
+                    if (interval < totalIntervals) {
+                      day.assignments[interval].push(agentSchedule.agentId);
+                    }
+                  }
+                }
+              });
+            }
+          });
+        });
+      }
+
+      applyEvenSpread(schedule, agentSchedules) {
+        // Simple implementation: balance workload across agents
+        const totalHoursByAgent = {};
+        agentSchedules.forEach(agent => {
+          totalHoursByAgent[agent.agentId] = agent.totalHours;
+        });
+        
+        // Sort agents by total hours
+        const sortedAgentIds = Object.keys(totalHoursByAgent).sort((a, b) => 
+          totalHoursByAgent[a] - totalHoursByAgent[b]
+        );
+        
+        // Redistribute some work from overworked to underworked agents
+        schedule.days.forEach((day, dayIndex) => {
+          day.assignments.forEach((intervalAssignments, intervalIndex) => {
+            if (intervalAssignments.length > 0) {
+              // Find the least busy agent in this interval
+              const agentIdsInInterval = [...intervalAssignments];
+              agentIdsInInterval.sort((a, b) => totalHoursByAgent[a] - totalHoursByAgent[b]);
+              
+              // If we have multiple agents, try to redistribute
+              if (agentIdsInInterval.length > 1) {
+                const leastBusyAgent = agentIdsInInterval[0];
+                const mostBusyAgent = agentIdsInInterval[agentIdsInInterval.length - 1];
+                
+                // Move some work from most busy to least busy
+                const agentIndex = intervalAssignments.indexOf(mostBusyAgent);
+                if (agentIndex !== -1) {
+                  intervalAssignments[agentIndex] = leastBusyAgent;
+                  totalHoursByAgent[leastBusyAgent] += (1 / intervalsPerHour);
+                  totalHoursByAgent[mostBusyAgent] -= (1 / intervalsPerHour);
+                }
+              }
+            }
+          });
+        });
+        
+        // Update agent total hours
+        agentSchedules.forEach(agent => {
+          agent.totalHours = totalHoursByAgent[agent.agentId] || 0;
+        });
+      }
+
+      applyBestFit(schedule, agentSchedules) {
+        // Simple best fit: match requirements as closely as possible
+        schedule.days.forEach((day, dayIndex) => {
+          const dayRequirements = this.requirements[dayIndex] || [];
+          const intervalsPerHour = 60 / this.intervalLength;
+          const totalIntervals = 24 * intervalsPerHour;
+          
+          for (let interval = 0; interval < totalIntervals; interval++) {
+            const required = Math.round(dayRequirements[interval] || 0);
+            const assigned = day.assignments[interval]?.length || 0;
+            
+            // Add or remove agents to match requirements
+            if (assigned < required) {
+              // Need more agents
+              const additionalNeeded = required - assigned;
+              const availableAgents = this.getAvailableAgents(agentSchedules, dayIndex, interval, day.assignments[interval] || []);
+              
+              for (let i = 0; i < Math.min(additionalNeeded, availableAgents.length); i++) {
+                day.assignments[interval].push(availableAgents[i].agentId);
+                // Update agent hours
+                const agent = agentSchedules.find(a => a.agentId === availableAgents[i].agentId);
+                if (agent) {
+                  agent.totalHours += (1 / intervalsPerHour);
+                  // Add activity to agent's schedule
+                  const hour = interval / intervalsPerHour;
+                  const agentDaySchedule = agent.schedule[dayIndex];
+                  if (agentDaySchedule && agentDaySchedule.working) {
+                    // Find or create inbound activity for this time
+                    const activity = agentDaySchedule.activities.find(a => 
+                      a.type === 'inbound' && a.start <= hour && a.end > hour
+                    );
+                    if (!activity) {
+                      agentDaySchedule.activities.push({
+                        start: hour,
+                        end: hour + (1 / intervalsPerHour),
+                        type: 'inbound',
+                        activity: 'Inbound'
+                      });
+                    }
+                  }
+                }
+              }
+            } else if (assigned > required) {
+              // Too many agents, remove some
+              const excess = assigned - required;
+              for (let i = 0; i < excess; i++) {
+                if (day.assignments[interval].length > 0) {
+                  const removedAgentId = day.assignments[interval].pop();
+                  // Update agent hours
+                  const agent = agentSchedules.find(a => a.agentId === removedAgentId);
+                  if (agent) {
+                    agent.totalHours = Math.max(0, agent.totalHours - (1 / intervalsPerHour));
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      getAvailableAgents(agentSchedules, dayIndex, interval, excludeIds = []) {
+        const intervalsPerHour = 60 / this.intervalLength;
+        const hour = interval / intervalsPerHour;
+        
+        return agentSchedules
+          .filter(agent => {
+            // Not already assigned
+            if (excludeIds.includes(agent.agentId)) return false;
+            
+            const daySchedule = agent.schedule[dayIndex];
+            if (!daySchedule || !daySchedule.working) return false;
+            
+            // Check if agent is available at this time
+            const hasConflict = daySchedule.activities.some(activity => 
+              activity.start <= hour && activity.end > hour
+            );
+            
+            return !hasConflict;
+          })
+          .sort((a, b) => a.totalHours - b.totalHours); // Prefer agents with fewer hours
+      }
+
+      respectContractedHours(agentSchedules) {
+        const maxWeeklyHours = parseInt(document.getElementById('maxWeeklyHours').value);
+        const periodWeeks = parseInt(document.getElementById('schedulePeriod').value) / 7;
+        const maxTotalHours = maxWeeklyHours * periodWeeks;
+        
+        agentSchedules.forEach(agent => {
+          if (agent.totalHours > maxTotalHours) {
+            // Reduce hours to contracted limit
+            const reductionFactor = maxTotalHours / agent.totalHours;
+            agent.totalHours = maxTotalHours;
+            
+            // Reduce activities proportionally
+            agent.schedule.forEach(daySchedule => {
+              if (daySchedule.working) {
+                // Remove some inbound activities
+                const inboundActivities = daySchedule.activities.filter(a => a.type === 'inbound');
+                const activitiesToKeep = Math.floor(inboundActivities.length * reductionFactor);
+                
+                // Remove excess activities
+                for (let i = inboundActivities.length - 1; i >= activitiesToKeep; i--) {
+                  const index = daySchedule.activities.indexOf(inboundActivities[i]);
+                  if (index !== -1) {
+                    daySchedule.activities.splice(index, 1);
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
+
+      minimizeOvertime(agentSchedules) {
+        // Simple implementation: reduce hours for agents with overtime
+        const maxWeeklyHours = parseInt(document.getElementById('maxWeeklyHours').value);
+        const periodWeeks = parseInt(document.getElementById('schedulePeriod').value) / 7;
+        const maxTotalHours = maxWeeklyHours * periodWeeks;
+        
+        agentSchedules.forEach(agent => {
+          if (agent.totalHours > maxTotalHours) {
+            const overtimeHours = agent.totalHours - maxTotalHours;
+            agent.totalHours = maxTotalHours;
+            
+            // Update schedule metrics
+            if (scheduleData.generatedSchedule) {
+              scheduleData.generatedSchedule.metrics.overtime += overtimeHours;
+            }
+          }
+        });
+      }
+
+      applyConstraints(agentSchedules) {
+        const maxConsecutiveDays = parseInt(document.getElementById('maxConsecutiveDays').value);
+        const minHoursBetweenShifts = parseInt(document.getElementById('minHoursBetweenShifts').value);
+        
+        agentSchedules.forEach(agent => {
+          let consecutiveDays = 0;
+          
+          for (let i = 0; i < agent.schedule.length; i++) {
+            if (agent.schedule[i].working) {
+              consecutiveDays++;
+              if (consecutiveDays > maxConsecutiveDays) {
+                // Add a day off
+                agent.schedule[i].working = false;
+                agent.schedule[i].activities = [];
+                agent.daysWorking--;
+                consecutiveDays = 0;
+                
+                // Update total hours
+                agent.totalHours = this.calculateAgentTotalHours(agent);
+              }
+            } else {
+              consecutiveDays = 0;
+            }
+          }
+        });
+      }
+
+      calculateAgentTotalHours(agent) {
+        return agent.schedule.reduce((total, day) => {
+          if (day.working) {
+            return total + day.activities.reduce((dayTotal, activity) => {
+              return dayTotal + (activity.end - activity.start);
+            }, 0);
+          }
+          return total;
+        }, 0);
+      }
+
       generateOvertimeOpportunities(schedule, agentSchedules) {
         const intervalLength = parseInt(document.getElementById('intervalLength').value);
+        const intervalsPerHour = 60 / intervalLength;
         
         schedule.days.forEach((day, dayIndex) => {
           const dayRequirements = this.requirements[dayIndex] || [];
-          day.overtimeSlots = [];
+          const totalIntervals = 24 * intervalsPerHour;
           
-          dayRequirements.forEach((requirement, intervalIndex) => {
-            const required = Math.round(requirement);
-            const assigned = day.assignments[intervalIndex]?.length || 0;
+          for (let interval = 0; interval < totalIntervals; interval++) {
+            const required = Math.round(dayRequirements[interval] || 0);
+            const assigned = day.assignments[interval]?.length || 0;
             
             if (assigned < required) {
               const shortage = required - assigned;
               // Create overtime opportunities for the shortage
               for (let i = 0; i < shortage; i++) {
                 day.overtimeSlots.push({
-                  intervalIndex,
-                  hour: Math.floor(intervalIndex * intervalLength / 60),
-                  minute: (intervalIndex * intervalLength) % 60,
+                  intervalIndex: interval,
+                  hour: Math.floor(interval / intervalsPerHour),
+                  minute: (interval % intervalsPerHour) * intervalLength,
                   duration: intervalLength,
                   available: true
                 });
               }
               schedule.metrics.overtime += shortage * (intervalLength / 60);
             }
-          });
+          }
         });
       }
-
-      applyBestFit(schedule, agentSchedules) {
-        schedule.days.forEach((day, dayIndex) => {
-          const dayRequirements = this.requirements[dayIndex] || [];
-          
-          dayRequirements.forEach((requirement, hourIndex) => {
-            const required = requirement;
-            const availableAgents = this.getAvailableAgentsAtHour(agentSchedules, dayIndex, hourIndex);
-            const assigned = Math.min(availableAgents.length, required);
-            
-            if (!day.assignments[hourIndex]) {
-              day.assignments[hourIndex] = [];
-            }
-            
-            for (let i = 0; i < assigned; i++) {
-              day.assignments[hourIndex].push(availableAgents[i].agentId);
-            }
-            
-            if (assigned < required) {
-              schedule.metrics.coverageGaps += (required - assigned);
-            }
-            
-            schedule.metrics.totalHours += assigned;
-          });
-        });
-      }
-
-      // ... (other methods remain the same as your existing code)
 
       calculateNetStaffing(schedule, requirements) {
         const netStaffing = [];
@@ -3037,7 +3261,7 @@
             
             if (shortfall > 0) {
               // Calculate time for this interval
-              const totalMinutes = interval * intervalLength;
+              const totalMinutes = interval * (60 / intervalsPerHour);
               const hours = Math.floor(totalMinutes / 60);
               const minutes = totalMinutes % 60;
               const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
@@ -3058,17 +3282,58 @@
         return opportunities;
       }
 
-      getAvailableAgentsAtHour(agentSchedules, dayIndex, hourIndex) {
-        return agentSchedules
-          .filter(agentSchedule => {
-            const daySchedule = agentSchedule.schedule[dayIndex];
-            if (!daySchedule || !daySchedule.working) return false;
+      calculateMetrics(schedule, agentSchedules) {
+        let totalScheduledHours = 0;
+        let totalRequiredHours = 0;
+        let coverageGaps = 0;
+        let overtimeHours = 0;
+        
+        const intervalsPerHour = 60 / this.intervalLength;
+        const totalIntervals = 24 * intervalsPerHour;
+        
+        // Calculate total scheduled hours from agent schedules
+        agentSchedules.forEach(agent => {
+          totalScheduledHours += agent.totalHours;
+        });
+        
+        // Calculate total required hours and coverage gaps
+        schedule.days.forEach((day, dayIndex) => {
+          const dayRequirements = this.requirements[dayIndex] || [];
+          const dayAssignments = day.assignments || [];
+          
+          for (let interval = 0; interval < totalIntervals; interval++) {
+            const required = dayRequirements[interval] || 0;
+            const assigned = dayAssignments[interval]?.length || 0;
             
-            return daySchedule.activities.some(activity => 
-              activity.start <= hourIndex && activity.end > hourIndex && activity.type === 'inbound'
-            );
-          })
-          .sort((a, b) => a.totalHours - b.totalHours);
+            totalRequiredHours += required / intervalsPerHour;
+            
+            if (assigned < required) {
+              coverageGaps += (required - assigned) / intervalsPerHour;
+            }
+          }
+        });
+        
+        // Calculate overtime
+        agentSchedules.forEach(agent => {
+          const maxWeeklyHours = parseInt(document.getElementById('maxWeeklyHours').value);
+          const periodWeeks = parseInt(document.getElementById('schedulePeriod').value) / 7;
+          const maxTotalHours = maxWeeklyHours * periodWeeks;
+          
+          if (agent.totalHours > maxTotalHours) {
+            overtimeHours += agent.totalHours - maxTotalHours;
+          }
+        });
+        
+        const utilization = totalRequiredHours > 0 ? 
+          (totalScheduledHours / totalRequiredHours) * 100 : 0;
+        
+        return {
+          totalHours: Math.round(totalScheduledHours),
+          utilization: Math.min(100, Math.round(utilization)),
+          coverageGaps: Math.round(coverageGaps),
+          overtime: Math.round(overtimeHours),
+          satisfaction: 85 // Placeholder
+        };
       }
     }
 
@@ -3190,6 +3455,9 @@
         document.getElementById('resultCoverageGaps').textContent = schedule.metrics.coverageGaps;
         document.getElementById('resultOvertime').textContent = schedule.metrics.overtime;
         
+        // Update overtime opportunities display
+        updateOvertimeOpportunities();
+        
         updateProgress(100);
         
         setTimeout(() => {
@@ -3211,6 +3479,66 @@
         updateStatus('Error generating schedule: ' + error.message, true);
         progressBar.style.display = 'none';
       }
+    }
+
+    // Update overtime opportunities display
+    function updateOvertimeOpportunities() {
+      if (!scheduleData.overtimeOpportunities || scheduleData.overtimeOpportunities.length === 0) {
+        overtimeOpportunities.style.display = 'none';
+        return;
+      }
+      
+      // Filter opportunities for current day
+      const dayOpportunities = scheduleData.overtimeOpportunities.filter(
+        opp => opp.day === scheduleData.currentDayIndex
+      );
+      
+      if (dayOpportunities.length === 0) {
+        overtimeOpportunities.style.display = 'none';
+        return;
+      }
+      
+      overtimeOpportunities.style.display = 'block';
+      opportunitiesList.innerHTML = '';
+      
+      // Group opportunities by time (2-hour windows)
+      const groupedOpportunities = {};
+      dayOpportunities.forEach(opp => {
+        const intervalsPerHour = 60 / scheduleData.currentInterval;
+        const hourGroup = Math.floor(opp.interval / intervalsPerHour);
+        const groupKey = `${Math.floor(hourGroup / 2) * 2}-${Math.floor(hourGroup / 2) * 2 + 2}`;
+        
+        if (!groupedOpportunities[groupKey]) {
+          groupedOpportunities[groupKey] = {
+            totalShortfall: 0,
+            opportunities: []
+          };
+        }
+        
+        groupedOpportunities[groupKey].totalShortfall += opp.shortfall;
+        groupedOpportunities[groupKey].opportunities.push(opp);
+      });
+      
+      // Create opportunity items
+      Object.entries(groupedOpportunities).forEach(([timeRange, data]) => {
+        if (data.totalShortfall > 0) {
+          const [startHour, endHour] = timeRange.split('-').map(Number);
+          const opportunityItem = document.createElement('div');
+          opportunityItem.className = 'opportunity-item';
+          
+          opportunityItem.innerHTML = `
+            <div class="opportunity-time">
+              ${startHour.toString().padStart(2, '0')}:00 - ${endHour.toString().padStart(2, '0')}:00
+            </div>
+            <div class="opportunity-details">
+              <strong>${data.totalShortfall} staff shortfall</strong><br>
+              ${data.opportunities.length} intervals affected
+            </div>
+          `;
+          
+          opportunitiesList.appendChild(opportunityItem);
+        }
+      });
     }
 
     // Update progress
@@ -3245,6 +3573,7 @@
           updateDateDisplay();
           renderDailySchedule();
           renderNetStaffing();
+          updateOvertimeOpportunities();
         }
       });
     });
@@ -3264,6 +3593,7 @@
         if (scheduleData.generatedSchedule) {
           renderDailySchedule();
           renderNetStaffing();
+          updateOvertimeOpportunities();
         }
       });
     });
