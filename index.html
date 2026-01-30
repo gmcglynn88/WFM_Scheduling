@@ -26,6 +26,7 @@
       --schedule-onqueue: #3b82f6;
       --schedule-available: #dbeafe;
       --schedule-unavailable: #f3f4f6;
+      --modified: #8b5cf6;
     }
     
     body, h1, h2, h3, h4, h5, h6, p, div, span, label, button, input, select, textarea, th, td, li, ul, ol {
@@ -246,23 +247,27 @@
       padding: 20px 24px;
       border-bottom: 1px solid var(--border-color);
       background: var(--light-bg);
-    }
-    
-    .schedule-date {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
     }
     
-    .date-info {
+    .schedule-controls {
       display: flex;
       align-items: center;
       gap: 12px;
     }
     
+    .date-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
     .date-display {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--text-color);
     }
@@ -276,263 +281,283 @@
       font-weight: 600;
     }
     
-    .date-navigation {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .nav-btn {
-      padding: 8px 16px;
-      border: 1px solid var(--border-color);
+    /* Net Staffing Ribbon */
+    .net-staffing-ribbon {
       background: white;
-      border-radius: 6px;
-      cursor: pointer;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 0 24px 20px 24px;
+      overflow-x: auto;
+    }
+
+    .net-staffing-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: var(--secondary-color);
+    }
+
+    .net-staffing-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(60px, 1fr);
+      gap: 2px;
+      min-height: 60px;
+    }
+
+    .net-staffing-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      border-radius: 4px;
+      font-size: 11px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .net-staffing-cell.adequate {
+      background: rgba(22, 163, 74, 0.1);
+      border-color: rgba(22, 163, 74, 0.3);
+    }
+
+    .net-staffing-cell.shortage {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .net-staffing-cell.overstaffed {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .net-staffing-time {
       font-weight: 600;
-      transition: all 0.2s;
+      font-size: 10px;
+      color: var(--text-light);
+      margin-bottom: 3px;
     }
-    
-    .nav-btn:hover {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
+
+    .net-staffing-value {
+      font-weight: 700;
+      font-size: 16px;
     }
-    
-    .nav-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+
+    .net-staffing-value.positive {
+      color: var(--good);
+    }
+
+    .net-staffing-value.negative {
+      color: var(--bad);
+    }
+
+    .net-staffing-value.neutral {
+      color: var(--text-color);
+    }
+
+    .net-staffing-label {
+      font-size: 9px;
+      color: var(--text-light);
+      margin-top: 2px;
     }
     
     /* Interval Selector */
     .interval-selector {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      gap: 5px;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 4px;
     }
-    
-    .interval-buttons {
-      display: flex;
-      gap: 4px;
-      background: var(--light-bg);
-      border-radius: 6px;
-      padding: 2px;
-    }
-    
-    .interval-btn {
+
+    .interval-selector button {
       padding: 6px 12px;
+      font-size: 12px;
+      min-width: 50px;
+      background: transparent;
+      color: var(--text-color);
       border: none;
-      background: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-light);
-      transition: all 0.2s;
     }
-    
-    .interval-btn:hover {
-      background: rgba(59, 130, 246, 0.1);
-    }
-    
-    .interval-btn.active {
+
+    .interval-selector button.active {
       background: var(--primary-color);
       color: white;
     }
-
-    /* Schedule Grid */
-    .schedule-grid-container {
-      position: relative;
+    
+    /* Daily Schedule Grid */
+    .daily-schedule-grid {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      margin: 0 24px 20px 24px;
       overflow-x: auto;
     }
-    
-    .schedule-grid {
-      display: grid;
-      grid-template-columns: 200px repeat(48, 60px);
-      min-width: 3200px;
-      background: white;
-    }
 
-    /* Time Headers */
-    .time-header {
-      position: sticky;
-      left: 0;
-      z-index: 20;
-      background: white;
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .time-header-content {
-      padding: 12px;
-      font-weight: 600;
-      color: var(--text-color);
-      background: white;
-      position: sticky;
-      left: 0;
-    }
-    
-    .hour-header {
-      grid-column: span 4;
-      background: var(--light-bg);
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 8px;
-      text-align: center;
-      font-weight: 600;
-      color: var(--text-color);
+    .schedule-grid-header {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(40px, 1fr);
+      background: var(--primary-color);
       position: sticky;
       top: 0;
-      z-index: 10;
-    }
-    
-    .half-hour-header {
-      grid-column: span 2;
-      background: white;
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      padding: 8px 4px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-light);
-      position: sticky;
-      top: 48px;
-      z-index: 10;
+      z-index: 100;
     }
 
-    /* Agent Rows */
-    .agent-row {
-      display: contents;
-    }
-    
-    .agent-name-cell {
-      position: sticky;
-      left: 0;
-      z-index: 15;
-      background: white;
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px;
-      font-weight: 600;
-      color: var(--text-color);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .agent-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
-    /* Schedule Cells */
-    .schedule-cell {
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      padding: 2px;
-      min-height: 48px;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .schedule-cell:hover {
-      background: rgba(59, 130, 246, 0.05);
-      z-index: 5;
-    }
-    
-    /* Activity Blocks */
-    .activity-block {
-      height: 100%;
-      border-radius: 4px;
-      padding: 8px 4px;
+    .schedule-time-header {
+      padding: 10px 4px;
+      text-align: center;
       font-size: 11px;
       font-weight: 600;
       color: white;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      min-width: 120px;
+      position: sticky;
+      left: 0;
+      background: var(--primary-color);
+      z-index: 101;
+    }
+
+    .schedule-interval-header {
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: white;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .schedule-agent-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(40px, 1fr);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .schedule-agent-row:last-child {
+      border-bottom: none;
+    }
+
+    .schedule-agent-name {
+      padding: 12px 8px;
+      font-weight: 600;
+      font-size: 12px;
+      background: rgba(99, 171, 143, 0.05);
+      border-right: 1px solid var(--border-color);
+      min-width: 120px;
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+    }
+
+    .schedule-activity-cell {
+      padding: 4px;
+      text-align: center;
+      border-right: 1px solid var(--border-color);
+      font-size: 10px;
+      font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      border: 1px solid transparent;
+      min-height: 50px;
+      cursor: pointer;
       transition: all 0.2s;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      position: relative;
     }
-    
-    .activity-block:hover {
-      filter: brightness(1.1);
-      transform: scale(1.02);
-      z-index: 10;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    .schedule-activity-cell:hover {
+      box-shadow: inset 0 0 0 2px var(--primary-color);
     }
-    
-    .activity-onqueue {
-      background: linear-gradient(135deg, var(--schedule-inbound), #2563eb);
-      border-color: #2563eb;
+
+    .schedule-activity-cell.modified {
+      border: 2px solid var(--modified);
     }
-    
-    .activity-break {
-      background: linear-gradient(135deg, var(--schedule-break), #d97706);
-      border-color: #d97706;
+
+    .schedule-activity-cell.on-queue {
+      background: rgba(99, 171, 143, 0.3);
+      color: var(--secondary-color);
     }
-    
-    .activity-lunch {
-      background: linear-gradient(135deg, var(--schedule-lunch), #b91c1c);
-      border-color: #b91c1c;
+
+    .schedule-activity-cell.break {
+      background: rgba(245, 158, 11, 0.3);
+      color: var(--warn);
     }
-    
-    .activity-meeting {
-      background: linear-gradient(135deg, var(--schedule-meeting), #7c3aed);
-      border-color: #7c3aed;
+
+    .schedule-activity-cell.lunch {
+      background: rgba(220, 38, 38, 0.3);
+      color: var(--bad);
     }
-    
-    .activity-coaching {
-      background: linear-gradient(135deg, var(--schedule-coaching), #0d9488);
-      border-color: #0d9488;
+
+    .schedule-activity-cell.meeting {
+      background: rgba(37, 99, 235, 0.3);
+      color: #2563eb;
     }
-    
-    .activity-training {
-      background: linear-gradient(135deg, var(--schedule-training), #4f46e5);
-      border-color: #4f46e5;
+
+    .schedule-activity-cell.coaching {
+      background: rgba(147, 51, 234, 0.3);
+      color: #9333ea;
     }
-    
-    .activity-vacation {
-      background: linear-gradient(135deg, var(--schedule-vacation), #64748b);
-      border-color: #64748b;
-    }
-    
-    .activity-unavailable {
-      background: var(--schedule-unavailable);
+
+    .schedule-activity-cell.off {
+      background: rgba(156, 163, 175, 0.1);
       color: var(--text-light);
     }
 
-    /* Timeline Indicators */
-    .current-time {
+    .schedule-activity-cell.overtime-opportunity {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(245, 158, 11, 0.1),
+        rgba(245, 158, 11, 0.1) 10px,
+        rgba(245, 158, 11, 0.2) 10px,
+        rgba(245, 158, 11, 0.2) 20px
+      );
+      border: 1px dashed var(--warn);
+      color: var(--warn);
+    }
+
+    .overtime-badge {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--bad);
-      z-index: 30;
-      pointer-events: none;
+      top: 2px;
+      right: 2px;
+      background: var(--warn);
+      color: white;
+      font-size: 8px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 24px;
+      padding: 16px 24px;
+      background: var(--light-bg);
+      border-bottom: 1px solid var(--border-color);
     }
     
-    .current-time::before {
-      content: '';
-      position: absolute;
-      top: -4px;
-      left: -3px;
-      width: 8px;
-      height: 8px;
-      background: var(--bad);
-      border-radius: 50%;
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     /* Legend */
@@ -627,8 +652,49 @@
       font-weight: 600;
     }
 
-    /* Activity Editor */
-    .activity-editor {
+    /* Save Indicator */
+    .save-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 12px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 999;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .save-indicator.show {
+      display: flex;
+    }
+
+    .save-indicator-icon {
+      font-size: 20px;
+    }
+
+    .save-indicator-text {
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
@@ -640,8 +706,8 @@
       justify-content: center;
       z-index: 1000;
     }
-    
-    .editor-modal {
+
+    .modal {
       background: white;
       border-radius: 8px;
       width: 90%;
@@ -649,116 +715,120 @@
       max-height: 90vh;
       overflow-y: auto;
     }
-    
-    .editor-header {
+
+    .modal-header {
       padding: 20px 24px;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    
-    .editor-header h3 {
+
+    .modal-header h2 {
       margin: 0;
-      font-size: 18px;
+      font-size: 20px;
       color: var(--text-color);
     }
-    
-    .editor-close {
+
+    .modal-close {
       background: none;
       border: none;
       font-size: 24px;
       cursor: pointer;
       color: var(--text-light);
     }
-    
-    .editor-body {
+
+    .modal-body {
       padding: 24px;
     }
-    
-    .activity-options {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 12px;
-      margin: 20px 0;
-    }
-    
-    .activity-option {
-      padding: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      background: white;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-    }
-    
-    .activity-option:hover {
-      border-color: var(--primary-color);
-      transform: translateY(-2px);
-    }
-    
-    .activity-option.selected {
-      border-color: var(--primary-color);
-      background: var(--schedule-available);
-    }
-    
-    .duration-selector {
-      margin: 20px 0;
-    }
-    
-    .duration-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    
-    .duration-btn {
-      padding: 8px 12px;
-      border: 1px solid var(--border-color);
-      background: white;
-      border-radius: 4px;
+
+    /* Publish Options */
+    .publish-option {
+      padding: 15px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 15px;
       cursor: pointer;
       transition: all 0.2s;
-    }
-    
-    .duration-btn:hover {
-      border-color: var(--primary-color);
-    }
-    
-    .duration-btn.selected {
-      background: var(--primary-color);
-      color: white;
-      border-color: var(--primary-color);
     }
 
-    /* Stats Bar */
-    .stats-bar {
-      display: flex;
-      gap: 24px;
-      padding: 16px 24px;
-      background: var(--light-bg);
-      border-bottom: 1px solid var(--border-color);
+    .publish-option:hover {
+      border-color: var(--primary-color);
+      background: rgba(99, 171, 143, 0.05);
     }
-    
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+
+    .publish-option.selected {
+      border-color: var(--primary-color);
+      background: rgba(99, 171, 143, 0.1);
     }
-    
-    .stat-value {
-      font-size: 24px;
+
+    .publish-option input[type="radio"] {
+      width: auto;
+      margin-right: 10px;
+    }
+
+    .publish-option-title {
       font-weight: 700;
-      color: var(--text-color);
+      font-size: 15px;
+      margin-bottom: 5px;
     }
-    
-    .stat-label {
+
+    .publish-option-description {
       font-size: 12px;
       color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    }
+
+    .date-range-inputs {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(99, 171, 143, 0.05);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .date-range-inputs.active {
+      display: block;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .form-group input[type="date"],
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .note {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid var(--warn);
+      padding: 12px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
     }
 
     /* Scrollbar */
@@ -782,12 +852,6 @@
     }
 
     /* Responsive */
-    @media (max-width: 1400px) {
-      .schedule-grid {
-        grid-template-columns: 180px repeat(48, 50px);
-      }
-    }
-    
     @media (max-width: 768px) {
       body {
         padding: 12px;
@@ -795,18 +859,6 @@
       
       .main-content {
         grid-template-columns: 1fr;
-      }
-      
-      .schedule-grid {
-        grid-template-columns: 150px repeat(24, 60px);
-      }
-      
-      .half-hour-header {
-        display: none;
-      }
-      
-      .hour-header {
-        grid-column: span 2;
       }
       
       .stats-bar {
@@ -823,6 +875,23 @@
       .action-buttons {
         flex-direction: column;
       }
+      
+      .schedule-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .schedule-controls {
+        flex-wrap: wrap;
+      }
+      
+      .net-staffing-grid {
+        grid-auto-columns: minmax(50px, 1fr);
+      }
+      
+      .row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -834,18 +903,19 @@
         <a href="#">Schedules</a> / <a href="#">Customer Operations</a> / <span>Residential</span>
       </div>
       <div class="page-title">
-        <h1>January 26, 2026</h1>
+        <h1>WFM Scheduling Tool</h1>
       </div>
       <div class="page-subtitle">
-        Customer Service - Total Agents: <strong>9</strong>
+        Customer Service - Daily Schedule View
       </div>
     </div>
 
     <!-- Tabs -->
     <div class="tabs-container">
       <div class="tabs">
-        <button class="tab active" data-tab="schedule">Schedule View</button>
+        <button class="tab active" data-tab="schedule">Daily Schedule</button>
         <button class="tab" data-tab="agents">Agent Management</button>
+        <button class="tab" data-tab="configuration">Configuration</button>
         <button class="tab" data-tab="reports">Reports</button>
       </div>
     </div>
@@ -855,45 +925,9 @@
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="sidebar-section">
-          <h3>Agents <span class="agent-count">9</span></h3>
+          <h3>Agents <span class="agent-count" id="agentCount">9</span></h3>
           <div class="agent-list" id="agentList">
             <!-- Agent items will be populated by JavaScript -->
-          </div>
-        </div>
-        
-        <div class="sidebar-section">
-          <h3>Filters</h3>
-          <div class="filters">
-            <div style="margin-bottom: 12px;">
-              <label style="display: block; margin-bottom: 4px; font-size: 14px; color: var(--text-color);">Activity Type</label>
-              <select style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
-                <option value="all">All Activities</option>
-                <option value="onqueue">On Queue</option>
-                <option value="break">Break</option>
-                <option value="lunch">Lunch</option>
-                <option value="meeting">Meeting</option>
-              </select>
-            </div>
-            
-            <div style="margin-bottom: 12px;">
-              <label style="display: block; margin-bottom: 4px; font-size: 14px; color: var(--text-color);">Shift</label>
-              <select style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
-                <option value="all">All Shifts</option>
-                <option value="morning">Morning (7am-3pm)</option>
-                <option value="afternoon">Afternoon (3pm-11pm)</option>
-                <option value="night">Night (11pm-7am)</option>
-              </select>
-            </div>
-            
-            <div>
-              <label style="display: block; margin-bottom: 4px; font-size: 14px; color: var(--text-color);">Status</label>
-              <select style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
-                <option value="all">All Status</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="actual">Actual</option>
-                <option value="vacation">Vacation</option>
-              </select>
-            </div>
           </div>
         </div>
         
@@ -902,72 +936,76 @@
           <div class="stats-mini">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
               <span style="font-size: 14px; color: var(--text-color);">Coverage Rate:</span>
-              <span style="font-weight: 600; color: var(--good);">92%</span>
+              <span style="font-weight: 600; color: var(--good);" id="coverageRate">92%</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
               <span style="font-size: 14px; color: var(--text-color);">Overtime Hours:</span>
-              <span style="font-weight: 600; color: var(--warn);">4.5</span>
+              <span style="font-weight: 600; color: var(--warn);" id="overtimeHours">4.5</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span style="font-size: 14px; color: var(--text-color);">Unfilled Shifts:</span>
-              <span style="font-weight: 600; color: var(--bad);">2</span>
+              <span style="font-weight: 600; color: var(--bad);" id="unfilledShifts">2</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Schedule View -->
+      <!-- Schedule View Tab -->
       <div class="tab-content active" id="scheduleTab">
         <div class="schedule-view">
           <!-- Stats Bar -->
           <div class="stats-bar">
             <div class="stat-item">
-              <div class="stat-value">9</div>
+              <div class="stat-value" id="totalAgents">9</div>
               <div class="stat-label">Total Agents</div>
             </div>
             <div class="stat-item">
-              <div class="stat-value">78.5</div>
+              <div class="stat-value" id="totalHours">78.5</div>
               <div class="stat-label">Total Hours</div>
             </div>
             <div class="stat-item">
-              <div class="stat-value">8</div>
+              <div class="stat-value" id="onQueueNow">8</div>
               <div class="stat-label">On Queue Now</div>
             </div>
             <div class="stat-item">
-              <div class="stat-value">92%</div>
+              <div class="stat-value" id="coverage">92%</div>
               <div class="stat-label">Coverage</div>
             </div>
           </div>
 
           <!-- Schedule Header -->
           <div class="schedule-header">
-            <div class="schedule-date">
-              <div class="date-info">
-                <div class="date-display">Monday, February 2, 2026</div>
-                <div class="day-indicator">Day 1 of 7</div>
-              </div>
-              <div class="date-navigation">
-                <button class="nav-btn" id="prevDayBtn">◀ Previous</button>
-                <button class="nav-btn" id="todayBtn">Today</button>
-                <button class="nav-btn" id="nextDayBtn">Next ▶</button>
+            <div class="schedule-controls">
+              <button class="secondary-btn" id="prevDayBtn">◀ Prev</button>
+              <span id="currentDateDisplay" style="padding: 0 15px; font-weight: 600; font-size: 16px;">Monday, 5 Feb 2024</span>
+              <button class="secondary-btn" id="nextDayBtn">Next ▶</button>
+              
+              <div class="interval-selector">
+                <button class="interval-btn" data-interval="15">15m</button>
+                <button class="interval-btn" data-interval="30">30m</button>
+                <button class="interval-btn" data-interval="45">45m</button>
+                <button class="interval-btn active" data-interval="60">60m</button>
               </div>
             </div>
             
-            <div class="interval-selector">
-              <span style="font-size: 14px; font-weight: 600; color: var(--text-color);">Interval:</span>
-              <div class="interval-buttons">
-                <button class="interval-btn active" data-interval="30">30 min</button>
-                <button class="interval-btn" data-interval="60">60 min</button>
-                <button class="interval-btn" data-interval="15">15 min</button>
-              </div>
+            <div class="action-buttons">
+              <button class="secondary-btn" id="saveChangesBtn" style="display: none;">💾 Save Changes</button>
+              <button class="primary-btn" id="publishBtn">📤 Publish Schedule</button>
+              <button class="secondary-btn" id="generateBtn">🔄 Generate</button>
             </div>
           </div>
 
-          <!-- Schedule Grid -->
-          <div class="schedule-grid-container">
-            <div class="schedule-grid" id="scheduleGrid">
-              <!-- Schedule grid will be generated by JavaScript -->
+          <!-- Net Staffing Ribbon -->
+          <div class="net-staffing-ribbon">
+            <div class="net-staffing-title">📊 Net Staffing (Required vs Scheduled)</div>
+            <div class="net-staffing-grid" id="netStaffingGrid">
+              <!-- Net staffing cells will be generated by JavaScript -->
             </div>
+          </div>
+
+          <!-- Daily Schedule Grid -->
+          <div class="daily-schedule-grid" id="dailyScheduleGrid">
+            <!-- Schedule grid will be generated by JavaScript -->
           </div>
 
           <!-- Legend -->
@@ -975,45 +1013,44 @@
             <div class="legend-title">Activity Legend</div>
             <div class="legend-items">
               <div class="legend-item">
-                <div class="legend-color activity-onqueue"></div>
+                <div class="legend-color" style="background: rgba(99, 171, 143, 0.3);"></div>
                 <span class="legend-label">On Queue</span>
               </div>
               <div class="legend-item">
-                <div class="legend-color activity-break"></div>
+                <div class="legend-color" style="background: rgba(245, 158, 11, 0.3);"></div>
                 <span class="legend-label">Break</span>
               </div>
               <div class="legend-item">
-                <div class="legend-color activity-lunch"></div>
+                <div class="legend-color" style="background: rgba(220, 38, 38, 0.3);"></div>
                 <span class="legend-label">Lunch</span>
               </div>
               <div class="legend-item">
-                <div class="legend-color activity-meeting"></div>
+                <div class="legend-color" style="background: rgba(37, 99, 235, 0.3);"></div>
                 <span class="legend-label">Meeting</span>
               </div>
               <div class="legend-item">
-                <div class="legend-color activity-coaching"></div>
+                <div class="legend-color" style="background: rgba(147, 51, 234, 0.3);"></div>
                 <span class="legend-label">Coaching</span>
               </div>
               <div class="legend-item">
-                <div class="legend-color activity-training"></div>
-                <span class="legend-label">Training</span>
+                <div class="legend-color" style="background: rgba(156, 163, 175, 0.1);"></div>
+                <span class="legend-label">Off</span>
               </div>
               <div class="legend-item">
-                <div class="legend-color activity-vacation"></div>
-                <span class="legend-label">Vacation</span>
+                <div class="legend-color" style="background: repeating-linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.1) 10px, rgba(245, 158, 11, 0.2) 10px, rgba(245, 158, 11, 0.2) 20px); border: 1px dashed var(--warn);"></div>
+                <span class="legend-label">Overtime Opportunity</span>
               </div>
             </div>
           </div>
 
           <!-- Action Bar -->
           <div class="action-bar">
+            <div class="publish-info">
+              Last published: <span class="publish-date" id="lastPublishedDate">January 28, 2026</span>
+            </div>
             <div class="action-buttons">
-              <button class="primary-btn" id="publishBtn">📤 Publish Schedule</button>
               <button class="secondary-btn" id="exportBtn">📥 Export to Excel</button>
               <button class="secondary-btn" id="printBtn">🖨️ Print Schedule</button>
-            </div>
-            <div class="publish-info">
-              Last published: <span class="publish-date">January 28, 2026</span>
             </div>
           </div>
         </div>
@@ -1027,6 +1064,85 @@
           </div>
           <div style="padding: 24px;">
             <p style="color: var(--text-light);">Agent management features would go here.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuration Tab -->
+      <div class="tab-content" id="configurationTab">
+        <div class="schedule-view">
+          <div class="schedule-header">
+            <h2 style="margin: 0; font-size: 24px; color: var(--text-color);">Configuration</h2>
+          </div>
+          <div style="padding: 24px;">
+            <div class="form-group">
+              <label>Business Hours</label>
+              <div class="row">
+                <div>
+                  <label>Start Time</label>
+                  <select id="businessStart" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <option value="7">7:00 AM</option>
+                    <option value="8" selected>8:00 AM</option>
+                    <option value="9">9:00 AM</option>
+                    <option value="10">10:00 AM</option>
+                  </select>
+                </div>
+                <div>
+                  <label>End Time</label>
+                  <select id="businessEnd" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <option value="17">5:00 PM</option>
+                    <option value="18" selected>6:00 PM</option>
+                    <option value="19">7:00 PM</option>
+                    <option value="20">8:00 PM</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Interval Length</label>
+              <select id="intervalLength" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60" selected>60 minutes</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Scheduling Rules</label>
+              <div style="background: var(--light-bg); padding: 15px; border-radius: 6px;">
+                <div style="margin-bottom: 10px;">
+                  <input type="checkbox" id="ruleBestFit" checked>
+                  <label for="ruleBestFit" style="display: inline; margin-left: 8px;">Best Fit (match agent skills to requirements)</label>
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <input type="checkbox" id="ruleEvenSpread" checked>
+                  <label for="ruleEvenSpread" style="display: inline; margin-left: 8px;">Even Spread (distribute workload evenly)</label>
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <input type="checkbox" id="ruleMinGaps" checked>
+                  <label for="ruleMinGaps" style="display: inline; margin-left: 8px;">Minimize Gaps in schedules</label>
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <input type="checkbox" id="ruleRespectPreferences" checked>
+                  <label for="ruleRespectPreferences" style="display: inline; margin-left: 8px;">Respect Agent Preferences</label>
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <input type="checkbox" id="ruleAvoidOvertime" checked>
+                  <label for="ruleAvoidOvertime" style="display: inline; margin-left: 8px;">Avoid Overtime where possible</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="ruleOvertimeOpportunities" checked>
+                  <label for="ruleOvertimeOpportunities" style="display: inline; margin-left: 8px;">Generate Overtime Opportunities</label>
+                  <div style="font-size: 12px; color: var(--text-light); margin-left: 24px; margin-top: 4px;">Create overtime slots for coverage shortfalls</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="btn-group">
+              <button class="primary-btn" id="saveConfigBtn">Save Configuration</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1045,36 +1161,76 @@
     </div>
   </div>
 
-  <!-- Activity Editor Modal -->
-  <div class="activity-editor" id="activityEditor">
-    <div class="editor-modal">
-      <div class="editor-header">
-        <h3>Schedule Activity</h3>
-        <button class="editor-close" id="closeEditorBtn">&times;</button>
+  <!-- Publish Modal -->
+  <div id="publishModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>📤 Publish Schedule</h2>
+        <button class="modal-close" id="publishModalCloseBtn">&times;</button>
       </div>
-      <div class="editor-body">
-        <div id="editorAgentInfo" style="margin-bottom: 20px; padding: 12px; background: var(--light-bg); border-radius: 6px;">
-          <strong style="color: var(--text-color);">Agent:</strong> <span id="editorAgentName">-</span><br>
-          <strong style="color: var(--text-color);">Time:</strong> <span id="editorTimeSlot">-</span>
-        </div>
-        
-        <div class="activity-options" id="activityOptions">
-          <!-- Activity options will be populated by JavaScript -->
-        </div>
-        
-        <div class="duration-selector">
-          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color);">Duration</label>
-          <div class="duration-buttons" id="durationButtons">
-            <!-- Duration buttons will be populated by JavaScript -->
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Select publish option:</label>
+          
+          <div class="publish-option" data-option="current">
+            <div>
+              <input type="radio" name="publishOption" value="current" id="publishCurrent" checked>
+              <label for="publishCurrent" style="display: inline;">
+                <div class="publish-option-title">Current Day Only</div>
+              </label>
+            </div>
+            <div class="publish-option-description">Publish schedule for the currently displayed day</div>
+          </div>
+          
+          <div class="publish-option" data-option="all">
+            <div>
+              <input type="radio" name="publishOption" value="all" id="publishAll">
+              <label for="publishAll" style="display: inline;">
+                <div class="publish-option-title">All Days</div>
+              </label>
+            </div>
+            <div class="publish-option-description">Publish the entire generated schedule period</div>
+          </div>
+          
+          <div class="publish-option" data-option="range">
+            <div>
+              <input type="radio" name="publishOption" value="range" id="publishRange">
+              <label for="publishRange" style="display: inline;">
+                <div class="publish-option-title">Date Range</div>
+              </label>
+            </div>
+            <div class="publish-option-description">Select specific start and end dates</div>
+            <div class="date-range-inputs" id="dateRangeInputs">
+              <div class="row">
+                <div class="form-group">
+                  <label for="publishStartDate">Start Date</label>
+                  <input type="date" id="publishStartDate">
+                </div>
+                <div class="form-group">
+                  <label for="publishEndDate">End Date</label>
+                  <input type="date" id="publishEndDate">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         
-        <div style="margin-top: 24px; display: flex; gap: 12px;">
-          <button class="primary-btn" id="saveActivityBtn" style="flex: 1;">Save Activity</button>
-          <button class="secondary-btn" id="clearActivityBtn" style="flex: 1;">Clear Slot</button>
+        <div class="note">
+          <strong>⚠️ Important:</strong> Publishing will make the schedule available to all agents and managers. Ensure all changes have been saved before publishing.
+        </div>
+        
+        <div class="btn-group">
+          <button id="confirmPublishBtn" class="primary-btn">✅ Confirm & Publish</button>
+          <button id="cancelPublishBtn" class="secondary-btn">Cancel</button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Save Indicator -->
+  <div class="save-indicator" id="saveIndicator">
+    <span class="save-indicator-icon">✅</span>
+    <span class="save-indicator-text">Changes saved</span>
   </div>
 
   <script>
@@ -1091,128 +1247,59 @@
       { id: 9, name: "Annabelle Goymer", dailyHours: 7.5, weeklyHours: 37.5, avatar: "AG" }
     ];
 
-    // Sample schedule data for February 2, 2026
-    const scheduleData = {
-      date: "2026-02-02",
-      dayOfWeek: "Monday",
-      activities: {
-        1: { // Gerard McGlynn
-          14: { type: "onqueue", duration: 2 }, // 7am-9am
-          18: { type: "break", duration: 1 },   // 9am-9:30am
-          20: { type: "onqueue", duration: 4 }, // 9:30am-11:30am
-          28: { type: "lunch", duration: 2 },   // 11:30am-12:30pm
-          30: { type: "onqueue", duration: 6 }, // 12:30pm-3:30pm
-          42: { type: "break", duration: 1 },   // 3:30pm-4pm
-          44: { type: "onqueue", duration: 4 }  // 4pm-6pm
-        },
-        2: { // Matthew Layton-Morris
-          16: { type: "onqueue", duration: 4 }, // 8am-10am
-          24: { type: "break", duration: 1 },   // 10am-10:30am
-          26: { type: "onqueue", duration: 4 }, // 10:30am-12:30pm
-          34: { type: "lunch", duration: 2 },   // 12:30pm-1:30pm
-          36: { type: "onqueue", duration: 6 }, // 1:30pm-4:30pm
-          48: { type: "break", duration: 1 },   // 4:30pm-5pm
-          50: { type: "onqueue", duration: 4 }  // 5pm-7pm
-        },
-        3: { // Iain Bennett
-          14: { type: "onqueue", duration: 2 }, // 7am-9am
-          18: { type: "break", duration: 1 },   // 9am-9:30am
-          20: { type: "onqueue", duration: 4 }, // 9:30am-11:30am
-          28: { type: "lunch", duration: 2 },   // 11:30am-12:30pm
-          30: { type: "meeting", duration: 4 }, // 12:30pm-2:30pm
-          38: { type: "onqueue", duration: 6 }  // 2:30pm-5:30pm
-        },
-        4: { // Rhys Turner
-          16: { type: "onqueue", duration: 4 }, // 8am-10am
-          24: { type: "break", duration: 1 },   // 10am-10:30am
-          26: { type: "onqueue", duration: 4 }, // 10:30am-12:30pm
-          34: { type: "lunch", duration: 2 },   // 12:30pm-1:30pm
-          36: { type: "coaching", duration: 2 },// 1:30pm-2:30pm
-          40: { type: "onqueue", duration: 6 }  // 2:30pm-5:30pm
-        },
-        5: { // Paul Malen
-          18: { type: "onqueue", duration: 4 }, // 9am-11am
-          26: { type: "break", duration: 1 },   // 11am-11:30am
-          28: { type: "onqueue", duration: 4 }, // 11:30am-1:30pm
-          36: { type: "lunch", duration: 2 },   // 1:30pm-2:30pm
-          38: { type: "onqueue", duration: 6 }  // 2:30pm-5:30pm
-        },
-        6: { // Freya DiBernardo
-          20: { type: "onqueue", duration: 4 }, // 10am-12pm
-          28: { type: "break", duration: 1 },   // 12pm-12:30pm
-          30: { type: "onqueue", duration: 4 }, // 12:30pm-2:30pm
-          38: { type: "lunch", duration: 2 },   // 2:30pm-3:30pm
-          40: { type: "training", duration: 4 } // 3:30pm-5:30pm
-        },
-        7: { // Beccy Hunt
-          22: { type: "onqueue", duration: 4 }, // 11am-1pm
-          30: { type: "break", duration: 1 },   // 1pm-1:30pm
-          32: { type: "onqueue", duration: 4 }, // 1:30pm-3:30pm
-          40: { type: "lunch", duration: 2 },   // 3:30pm-4:30pm
-          42: { type: "onqueue", duration: 6 }  // 4:30pm-7:30pm
-        },
-        8: { // Tom Wills
-          24: { type: "onqueue", duration: 4 }, // 12pm-2pm
-          32: { type: "break", duration: 1 },   // 2pm-2:30pm
-          34: { type: "onqueue", duration: 4 }, // 2:30pm-4:30pm
-          42: { type: "lunch", duration: 2 },   // 4:30pm-5:30pm
-          44: { type: "onqueue", duration: 6 }  // 5:30pm-8:30pm
-        },
-        9: { // Annabelle Goymer
-          26: { type: "onqueue", duration: 4 }, // 1pm-3pm
-          34: { type: "break", duration: 1 },   // 3pm-3:30pm
-          36: { type: "onqueue", duration: 4 }, // 3:30pm-5:30pm
-          44: { type: "lunch", duration: 2 },   // 5:30pm-6:30pm
-          46: { type: "onqueue", duration: 6 }  // 6:30pm-9:30pm
-        }
-      }
+    // Main schedule data object
+    let scheduleData = {
+      requirements: [],
+      staff: [],
+      assignments: [],
+      generatedSchedule: null,
+      currentDayIndex: 0,
+      totalDays: 7,
+      currentInterval: 60,
+      agentSchedules: [],
+      netStaffing: [],
+      hasUnsavedChanges: false,
+      modifiedCells: new Set()
     };
 
     // Activity types
     const activityTypes = [
-      { id: "onqueue", name: "On Queue", color: "activity-onqueue" },
-      { id: "break", name: "Break", color: "activity-break" },
-      { id: "lunch", name: "Lunch", color: "activity-lunch" },
-      { id: "meeting", name: "Meeting", color: "activity-meeting" },
-      { id: "coaching", name: "Coaching", color: "activity-coaching" },
-      { id: "training", name: "Training", color: "activity-training" },
-      { id: "vacation", name: "Vacation", color: "activity-vacation" },
-      { id: "unavailable", name: "Unavailable", color: "activity-unavailable" }
+      { id: "onqueue", name: "On Queue", color: "on-queue" },
+      { id: "break", name: "Break", color: "break" },
+      { id: "lunch", name: "Lunch", color: "lunch" },
+      { id: "meeting", name: "Meeting", color: "meeting" },
+      { id: "coaching", name: "Coaching", color: "coaching" },
+      { id: "off", name: "Off", color: "off" }
     ];
-
-    // Duration options (in 30-minute intervals)
-    const durationOptions = [1, 2, 3, 4, 6, 8];
-
-    // Current state
-    let currentDate = new Date("2026-02-02");
-    let selectedAgent = null;
-    let selectedCell = null;
-    let currentInterval = 30; // minutes
 
     // DOM Elements
     const agentList = document.getElementById("agentList");
-    const scheduleGrid = document.getElementById("scheduleGrid");
-    const activityEditor = document.getElementById("activityEditor");
-    const closeEditorBtn = document.getElementById("closeEditorBtn");
-    const editorAgentName = document.getElementById("editorAgentName");
-    const editorTimeSlot = document.getElementById("editorTimeSlot");
-    const activityOptions = document.getElementById("activityOptions");
-    const durationButtons = document.getElementById("durationButtons");
-    const saveActivityBtn = document.getElementById("saveActivityBtn");
-    const clearActivityBtn = document.getElementById("clearActivityBtn");
+    const dailyScheduleGrid = document.getElementById("dailyScheduleGrid");
+    const netStaffingGrid = document.getElementById("netStaffingGrid");
     const prevDayBtn = document.getElementById("prevDayBtn");
-    const todayBtn = document.getElementById("todayBtn");
     const nextDayBtn = document.getElementById("nextDayBtn");
+    const currentDateDisplay = document.getElementById("currentDateDisplay");
+    const intervalBtns = document.querySelectorAll('.interval-btn');
+    const saveChangesBtn = document.getElementById("saveChangesBtn");
     const publishBtn = document.getElementById("publishBtn");
-    const intervalButtons = document.querySelectorAll(".interval-btn");
+    const generateBtn = document.getElementById("generateBtn");
+    const publishModal = document.getElementById("publishModal");
+    const publishModalCloseBtn = document.getElementById("publishModalCloseBtn");
+    const confirmPublishBtn = document.getElementById("confirmPublishBtn");
+    const cancelPublishBtn = document.getElementById("cancelPublishBtn");
+    const saveIndicator = document.getElementById("saveIndicator");
+    const saveConfigBtn = document.getElementById("saveConfigBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const printBtn = document.getElementById("printBtn");
 
     // Initialize
     function init() {
       renderAgentList();
-      renderScheduleGrid();
+      generateSampleSchedule();
       setupEventListeners();
-      updateCurrentTime();
-      setInterval(updateCurrentTime, 60000); // Update every minute
+      updateDateDisplay();
+      renderDailySchedule();
+      renderNetStaffing();
     }
 
     // Render agent list
@@ -1243,216 +1330,562 @@
             item.classList.remove("selected");
           });
           agentItem.classList.add("selected");
-          selectedAgent = agent.id;
           
-          // Scroll to agent row
-          const agentRow = document.querySelector(`.agent-row[data-agent-id="${agent.id}"]`);
+          // Scroll to agent row in schedule
+          const agentRows = document.querySelectorAll('.schedule-agent-row');
+          const agentRow = Array.from(agentRows).find(row => {
+            const nameCell = row.querySelector('.schedule-agent-name');
+            return nameCell && nameCell.textContent.includes(agent.name.split(' ')[0]);
+          });
+          
           if (agentRow) {
-            const cell = agentRow.querySelector(".agent-name-cell");
-            cell.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+            agentRow.scrollIntoView({ behavior: "smooth", block: "nearest" });
           }
         });
         
         agentList.appendChild(agentItem);
       });
+      
+      document.getElementById("agentCount").textContent = agents.length;
+      document.getElementById("totalAgents").textContent = agents.length;
     }
 
-    // Render schedule grid
-    function renderScheduleGrid() {
-      scheduleGrid.innerHTML = "";
+    // Generate sample schedule data
+    function generateSampleSchedule() {
+      const intervalLength = scheduleData.currentInterval;
+      const config = collectConfiguration();
+      const businessStart = config.businessHours.start;
+      const businessEnd = config.businessHours.end;
+      const intervalsPerHour = 60 / intervalLength;
+      const totalIntervals = (businessEnd - businessStart) * intervalsPerHour;
       
-      // Create time headers (7am to 11pm in 30-minute intervals)
-      createTimeHeaders();
+      // Generate requirements (random between 5-10 agents required per interval)
+      const requirements = [];
+      for (let i = 0; i < totalIntervals; i++) {
+        requirements.push(Math.floor(Math.random() * 6) + 5);
+      }
+      
+      // Generate agent schedules
+      const agentSchedules = [];
+      agents.forEach(agent => {
+        const schedule = [];
+        
+        // Generate 7 days of schedule
+        for (let day = 0; day < 7; day++) {
+          const daySchedule = {
+            working: true,
+            activities: []
+          };
+          
+          // Random shift pattern
+          const shiftStart = businessStart + Math.floor(Math.random() * 4);
+          const shiftLength = Math.floor(Math.random() * 4) + 6; // 6-9 hours
+          
+          // Add activities
+          let currentTime = shiftStart;
+          
+          // Start with on-queue
+          const firstActivityDuration = Math.floor(Math.random() * 3) + 2; // 2-4 hours in intervals
+          daySchedule.activities.push({
+            type: 'inbound',
+            activity: 'On Queue',
+            start: currentTime,
+            end: currentTime + (firstActivityDuration * intervalLength / 60)
+          });
+          currentTime += firstActivityDuration * intervalLength / 60;
+          
+          // Add break
+          daySchedule.activities.push({
+            type: 'break',
+            activity: 'Break',
+            start: currentTime,
+            end: currentTime + (0.5 * intervalLength / 60) // 30min break
+          });
+          currentTime += 0.5 * intervalLength / 60;
+          
+          // More on-queue
+          const secondActivityDuration = Math.floor(Math.random() * 3) + 2;
+          daySchedule.activities.push({
+            type: 'inbound',
+            activity: 'On Queue',
+            start: currentTime,
+            end: currentTime + (secondActivityDuration * intervalLength / 60)
+          });
+          currentTime += secondActivityDuration * intervalLength / 60;
+          
+          // Add lunch
+          daySchedule.activities.push({
+            type: 'lunch',
+            activity: 'Lunch',
+            start: currentTime,
+            end: currentTime + (1 * intervalLength / 60) // 1 hour lunch
+          });
+          currentTime += 1 * intervalLength / 60;
+          
+          // Final on-queue session
+          const remainingTime = (shiftStart + shiftLength) - currentTime;
+          if (remainingTime > 0) {
+            daySchedule.activities.push({
+              type: 'inbound',
+              activity: 'On Queue',
+              start: currentTime,
+              end: currentTime + remainingTime
+            });
+          }
+          
+          schedule.push(daySchedule);
+        }
+        
+        agentSchedules.push({
+          agentId: agent.id,
+          agentName: agent.name,
+          schedule: schedule
+        });
+      });
+      
+      // Calculate net staffing
+      const netStaffing = [];
+      for (let day = 0; day < 7; day++) {
+        const dayNetStaffing = [];
+        
+        for (let interval = 0; interval < totalIntervals; interval++) {
+          const required = requirements[interval];
+          
+          // Count scheduled agents for this interval
+          let scheduled = 0;
+          agentSchedules.forEach(agentSchedule => {
+            const daySchedule = agentSchedule.schedule[day];
+            if (daySchedule.working) {
+              const currentTime = businessStart + (interval * intervalLength / 60);
+              
+              // Check if agent is scheduled for this time
+              const hasActivity = daySchedule.activities.some(activity => 
+                activity.start <= currentTime && activity.end > currentTime && activity.type === 'inbound'
+              );
+              
+              if (hasActivity) {
+                scheduled++;
+              }
+            }
+          });
+          
+          const net = scheduled - required;
+          let status = 'adequate';
+          if (net < -2) status = 'shortage';
+          else if (net > 2) status = 'overstaffed';
+          
+          dayNetStaffing.push({
+            intervalIndex: interval,
+            required: required,
+            scheduled: scheduled,
+            net: net,
+            status: status
+          });
+        }
+        
+        netStaffing.push(dayNetStaffing);
+      }
+      
+      // Create generated schedule object
+      scheduleData.generatedSchedule = {
+        days: Array.from({length: 7}, (_, i) => {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          return { date: date };
+        }),
+        metrics: {
+          totalHours: 78.5,
+          coverage: 92,
+          overtime: 4.5
+        }
+      };
+      
+      scheduleData.agentSchedules = agentSchedules;
+      scheduleData.netStaffing = netStaffing;
+      scheduleData.totalDays = 7;
+      
+      // Add some overtime opportunities
+      if (document.getElementById('ruleOvertimeOpportunities').checked) {
+        scheduleData.generatedSchedule.days.forEach((day, dayIndex) => {
+          day.overtimeSlots = [];
+          
+          // Add random overtime opportunities
+          const overtimeCount = Math.floor(Math.random() * 3) + 1;
+          for (let i = 0; i < overtimeCount; i++) {
+            const randomInterval = Math.floor(Math.random() * totalIntervals);
+            day.overtimeSlots.push({
+              intervalIndex: randomInterval,
+              hour: businessStart + Math.floor(randomInterval * intervalLength / 60),
+              minute: (randomInterval * intervalLength) % 60,
+              duration: intervalLength,
+              available: true
+            });
+          }
+        });
+      }
+      
+      // Update UI stats
+      updateStats();
+    }
+
+    // Render net staffing ribbon
+    function renderNetStaffing() {
+      if (!scheduleData.netStaffing || scheduleData.currentDayIndex >= scheduleData.netStaffing.length) {
+        netStaffingGrid.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-light);">No net staffing data available</div>';
+        return;
+      }
+      
+      netStaffingGrid.innerHTML = '';
+      
+      const dayNetStaffing = scheduleData.netStaffing[scheduleData.currentDayIndex];
+      const intervalLength = scheduleData.currentInterval;
+      const config = collectConfiguration();
+      
+      // Filter to show only business hours
+      const businessStart = config.businessHours.start;
+      const businessEnd = config.businessHours.end;
+      
+      dayNetStaffing.forEach(interval => {
+        const hour = Math.floor((interval.intervalIndex * intervalLength) / 60);
+        
+        // Only show business hours
+        if (hour < businessStart || hour >= businessEnd) return;
+        
+        const cell = document.createElement('div');
+        cell.className = `net-staffing-cell ${interval.status}`;
+        
+        const minute = (interval.intervalIndex * intervalLength) % 60;
+        const timeLabel = document.createElement('div');
+        timeLabel.className = 'net-staffing-time';
+        timeLabel.textContent = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        
+        const valueLabel = document.createElement('div');
+        valueLabel.className = `net-staffing-value ${interval.net >= 0 ? (interval.net > 2 ? 'positive' : 'neutral') : 'negative'}`;
+        valueLabel.textContent = interval.net >= 0 ? `+${interval.net}` : interval.net;
+        
+        const detailLabel = document.createElement('div');
+        detailLabel.className = 'net-staffing-label';
+        detailLabel.textContent = `${interval.scheduled}/${interval.required}`;
+        
+        cell.appendChild(timeLabel);
+        cell.appendChild(valueLabel);
+        cell.appendChild(detailLabel);
+        
+        netStaffingGrid.appendChild(cell);
+      });
+    }
+
+    // Render daily schedule grid
+    function renderDailySchedule() {
+      if (!scheduleData.agentSchedules || scheduleData.agentSchedules.length === 0) {
+        dailyScheduleGrid.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-light);">No schedule generated yet. Click "Generate Schedule" to create assignments.</div>';
+        return;
+      }
+      
+      dailyScheduleGrid.innerHTML = '';
+      
+      const intervalLength = scheduleData.currentInterval;
+      const config = collectConfiguration();
+      const businessStart = config.businessHours.start;
+      const businessEnd = config.businessHours.end;
+      const intervalsPerHour = 60 / intervalLength;
+      
+      // Create header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'schedule-grid-header';
+      
+      const timeHeader = document.createElement('div');
+      timeHeader.className = 'schedule-time-header';
+      timeHeader.textContent = 'Agent Name';
+      headerRow.appendChild(timeHeader);
+      
+      // Add interval headers for business hours only
+      for (let hour = businessStart; hour < businessEnd; hour++) {
+        for (let interval = 0; interval < intervalsPerHour; interval++) {
+          const minute = interval * intervalLength;
+          const intervalHeader = document.createElement('div');
+          intervalHeader.className = 'schedule-interval-header';
+          intervalHeader.textContent = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+          headerRow.appendChild(intervalHeader);
+        }
+      }
+      
+      dailyScheduleGrid.appendChild(headerRow);
       
       // Create agent rows
-      agents.forEach(agent => {
-        createAgentRow(agent);
-      });
-    }
-
-    // Create time headers
-    function createTimeHeaders() {
-      // Empty cell for agent names column
-      const timeHeader = document.createElement("div");
-      timeHeader.className = "time-header";
-      timeHeader.innerHTML = '<div class="time-header-content">Agent / Time</div>';
-      scheduleGrid.appendChild(timeHeader);
+      const currentDayIndex = scheduleData.currentDayIndex;
+      const overtimeSlots = scheduleData.generatedSchedule?.days[currentDayIndex]?.overtimeSlots || [];
       
-      // Create hour headers (7am to 11pm)
-      for (let hour = 7; hour <= 23; hour++) {
-        const hourHeader = document.createElement("div");
-        hourHeader.className = "hour-header";
-        hourHeader.textContent = formatHour(hour);
-        hourHeader.style.gridColumn = `span 4`; // 2 hours in 30-min intervals
-        scheduleGrid.appendChild(hourHeader);
+      scheduleData.agentSchedules.forEach(agentSchedule => {
+        if (currentDayIndex >= agentSchedule.schedule.length) return;
         
-        // Create half-hour headers
-        for (let half = 0; half < 2; half++) {
-          const halfHourHeader = document.createElement("div");
-          halfHourHeader.className = "half-hour-header";
-          halfHourHeader.textContent = half === 0 ? "00" : "30";
-          scheduleGrid.appendChild(halfHourHeader);
-        }
-      }
-    }
-
-    // Create agent row
-    function createAgentRow(agent) {
-      const agentRow = document.createElement("div");
-      agentRow.className = "agent-row";
-      agentRow.dataset.agentId = agent.id;
-      
-      // Agent name cell
-      const agentNameCell = document.createElement("div");
-      agentNameCell.className = "agent-name-cell";
-      agentNameCell.innerHTML = `
-        <div class="agent-avatar">${agent.avatar}</div>
-        <span>${agent.name}</span>
-      `;
-      agentRow.appendChild(agentNameCell);
-      
-      // Create schedule cells (7am to 11pm in 30-minute intervals)
-      const totalIntervals = 34; // 7am-11pm = 16 hours * 2 = 32 intervals, plus 2 for 11pm-12am
-      
-      for (let interval = 0; interval < totalIntervals; interval++) {
-        const cell = document.createElement("div");
-        cell.className = "schedule-cell";
-        cell.dataset.agentId = agent.id;
-        cell.dataset.interval = interval;
+        const daySchedule = agentSchedule.schedule[currentDayIndex];
+        const row = document.createElement('div');
+        row.className = 'schedule-agent-row';
         
-        // Calculate actual time slot index (starting from 7am = index 14 in 30-min intervals from midnight)
-        const timeSlotIndex = 14 + interval;
+        const agentName = document.createElement('div');
+        agentName.className = 'schedule-agent-name';
+        agentName.textContent = agentSchedule.agentName;
+        row.appendChild(agentName);
         
-        // Check if there's an activity for this time slot
-        const agentActivities = scheduleData.activities[agent.id];
-        let activity = null;
-        
-        if (agentActivities) {
-          // Find activity that covers this time slot
-          for (const [start, activityData] of Object.entries(agentActivities)) {
-            const startIndex = parseInt(start);
-            const endIndex = startIndex + activityData.duration;
+        // Add activity cells for business hours
+        for (let hour = businessStart; hour < businessEnd; hour++) {
+          for (let interval = 0; interval < intervalsPerHour; interval++) {
+            const minute = interval * intervalLength;
+            const totalMinutes = hour * 60 + minute;
+            const intervalIndex = totalMinutes / intervalLength;
+            const currentTime = hour + (minute / 60);
             
-            if (timeSlotIndex >= startIndex && timeSlotIndex < endIndex) {
-              activity = activityData;
-              break;
+            const cell = document.createElement('div');
+            cell.className = 'schedule-activity-cell';
+            cell.dataset.agent = agentSchedule.agentId;
+            cell.dataset.interval = intervalIndex;
+            
+            // Find activity at this time
+            const activity = daySchedule.activities.find(act => 
+              act.start <= currentTime && act.end > currentTime
+            );
+            
+            if (activity) {
+              cell.classList.add(activity.type === 'inbound' ? 'on-queue' : activity.type);
+              cell.textContent = activity.activity;
+              
+              // Check if cell was modified
+              const cellKey = `${agentSchedule.agentId}-${currentDayIndex}-${intervalIndex}`;
+              if (scheduleData.modifiedCells.has(cellKey)) {
+                cell.classList.add('modified');
+              }
+            } else if (!daySchedule.working) {
+              cell.classList.add('off');
+              cell.textContent = '';
             }
+            
+            // Check if this interval has overtime opportunities
+            const hasOvertimeOpp = overtimeSlots.some(slot => 
+              Math.abs(slot.intervalIndex - intervalIndex) < 0.5
+            );
+            
+            if (hasOvertimeOpp && !activity) {
+              cell.classList.add('overtime-opportunity');
+              cell.innerHTML = 'OT<span class="overtime-badge">!</span>';
+            }
+            
+            // Make cell clickable
+            cell.addEventListener('click', () => handleCellClick(agentSchedule.agentId, currentDayIndex, intervalIndex, cell));
+            
+            row.appendChild(cell);
           }
         }
         
-        if (activity) {
-          const activityType = activityTypes.find(type => type.id === activity.type);
-          if (activityType) {
-            const activityBlock = document.createElement("div");
-            activityBlock.className = `activity-block ${activityType.color}`;
-            activityBlock.textContent = activityType.name.substring(0, 3);
-            activityBlock.title = `${activityType.name} (${formatTimeFromIndex(timeSlotIndex)} - ${formatTimeFromIndex(timeSlotIndex + 1)})`;
-            cell.appendChild(activityBlock);
-          }
+        dailyScheduleGrid.appendChild(row);
+      });
+    }
+
+    // Handle cell click for editing
+    function handleCellClick(agentId, dayIndex, intervalIndex, cell) {
+      const activities = ['On Queue', 'Break', 'Lunch', 'Meeting', 'Coaching', 'Off'];
+      const currentActivity = cell.textContent.replace('OT!', '').trim();
+      
+      const nextActivityIndex = (activities.indexOf(currentActivity) + 1) % activities.length;
+      const nextActivity = activities[nextActivityIndex];
+      
+      // Update cell appearance
+      cell.className = 'schedule-activity-cell modified';
+      
+      if (nextActivity === 'On Queue') {
+        cell.classList.add('on-queue');
+      } else if (nextActivity === 'Off') {
+        cell.classList.add('off');
+      } else {
+        cell.classList.add(nextActivity.toLowerCase());
+      }
+      
+      cell.textContent = nextActivity === 'Off' ? '' : nextActivity;
+      
+      // Track modification
+      const cellKey = `${agentId}-${dayIndex}-${intervalIndex}`;
+      scheduleData.modifiedCells.add(cellKey);
+      scheduleData.hasUnsavedChanges = true;
+      
+      // Show save button
+      saveChangesBtn.style.display = 'inline-block';
+    }
+
+    // Navigate to previous day
+    function navigatePrevDay() {
+      if (scheduleData.currentDayIndex > 0) {
+        scheduleData.currentDayIndex--;
+        updateDateDisplay();
+        renderDailySchedule();
+        renderNetStaffing();
+      }
+    }
+
+    // Navigate to next day
+    function navigateNextDay() {
+      if (scheduleData.currentDayIndex < scheduleData.totalDays - 1) {
+        scheduleData.currentDayIndex++;
+        updateDateDisplay();
+        renderDailySchedule();
+        renderNetStaffing();
+      }
+    }
+
+    // Update date display
+    function updateDateDisplay() {
+      if (!scheduleData.generatedSchedule || scheduleData.currentDayIndex >= scheduleData.generatedSchedule.days.length) {
+        currentDateDisplay.textContent = 'No date selected';
+        return;
+      }
+      
+      const currentDay = scheduleData.generatedSchedule.days[scheduleData.currentDayIndex];
+      currentDateDisplay.textContent = formatFullDate(currentDay.date);
+    }
+
+    // Format date for full display
+    function formatFullDate(date) {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+
+    // Format date for input fields
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Format date for display
+    function formatDisplayDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Collect configuration from form
+    function collectConfiguration() {
+      return {
+        businessHours: {
+          start: parseInt(document.getElementById('businessStart').value),
+          end: parseInt(document.getElementById('businessEnd').value)
+        },
+        intervalLength: parseInt(document.getElementById('intervalLength').value),
+        rules: collectRules()
+      };
+    }
+
+    // Collect rules from checkboxes
+    function collectRules() {
+      return {
+        bestFit: document.getElementById('ruleBestFit').checked,
+        evenSpread: document.getElementById('ruleEvenSpread').checked,
+        minGaps: document.getElementById('ruleMinGaps').checked,
+        respectPreferences: document.getElementById('ruleRespectPreferences').checked,
+        avoidOvertime: document.getElementById('ruleAvoidOvertime').checked,
+        overtimeOpportunities: document.getElementById('ruleOvertimeOpportunities').checked
+      };
+    }
+
+    // Save changes
+    function saveChanges() {
+      if (!scheduleData.hasUnsavedChanges) {
+        showSaveIndicator('No changes to save');
+        return;
+      }
+      
+      // In a real application, this would save to a backend
+      console.log('Saving changes...', Array.from(scheduleData.modifiedCells));
+      
+      scheduleData.hasUnsavedChanges = false;
+      saveChangesBtn.style.display = 'none';
+      
+      showSaveIndicator('Changes saved successfully');
+    }
+
+    // Show save indicator
+    function showSaveIndicator(message) {
+      const indicator = document.getElementById('saveIndicator');
+      const textEl = indicator.querySelector('.save-indicator-text');
+      textEl.textContent = message;
+      
+      indicator.classList.add('show');
+      
+      setTimeout(() => {
+        indicator.classList.remove('show');
+      }, 3000);
+    }
+
+    // Show publish modal
+    function showPublishModal() {
+      if (!scheduleData.generatedSchedule) {
+        alert('Please generate a schedule first.');
+        return;
+      }
+      
+      if (scheduleData.hasUnsavedChanges) {
+        if (!confirm('You have unsaved changes. Do you want to save them before publishing?')) {
+          return;
         }
-        
-        // Add click event
-        cell.addEventListener("click", () => {
-          selectedCell = cell;
-          selectedAgent = agent.id;
-          openActivityEditor(agent, timeSlotIndex);
-        });
-        
-        agentRow.appendChild(cell);
+        saveChanges();
       }
       
-      scheduleGrid.appendChild(agentRow);
-    }
-
-    // Open activity editor
-    function openActivityEditor(agent, timeSlotIndex) {
-      editorAgentName.textContent = agent.name;
-      editorTimeSlot.textContent = `${formatTimeFromIndex(timeSlotIndex)} - ${formatTimeFromIndex(timeSlotIndex + 1)}`;
+      // Set date range defaults
+      const firstDay = scheduleData.generatedSchedule.days[0].date;
+      const lastDay = scheduleData.generatedSchedule.days[scheduleData.totalDays - 1].date;
       
-      // Populate activity options
-      activityOptions.innerHTML = "";
-      activityTypes.forEach(type => {
-        const option = document.createElement("div");
-        option.className = "activity-option";
-        option.dataset.activityType = type.id;
-        option.innerHTML = `
-          <div style="width: 24px; height: 24px; border-radius: 4px; margin: 0 auto 8px; background: linear-gradient(135deg, var(--schedule-${type.id}), #000);"></div>
-          <div style="font-size: 12px; font-weight: 600;">${type.name}</div>
-        `;
-        
-        option.addEventListener("click", () => {
-          document.querySelectorAll(".activity-option").forEach(opt => {
-            opt.classList.remove("selected");
-          });
-          option.classList.add("selected");
-        });
-        
-        activityOptions.appendChild(option);
-      });
+      document.getElementById('publishStartDate').value = formatDate(firstDay);
+      document.getElementById('publishEndDate').value = formatDate(lastDay);
       
-      // Populate duration buttons
-      durationButtons.innerHTML = "";
-      durationOptions.forEach(duration => {
-        const btn = document.createElement("button");
-        btn.className = "duration-btn";
-        btn.textContent = `${duration * 30} min`;
-        btn.dataset.duration = duration;
-        
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".duration-btn").forEach(b => {
-            b.classList.remove("selected");
-          });
-          btn.classList.add("selected");
-        });
-        
-        durationButtons.appendChild(btn);
-      });
+      publishModal.style.display = 'flex';
+    }
+
+    // Hide publish modal
+    function hidePublishModal() {
+      publishModal.style.display = 'none';
+    }
+
+    // Confirm publish
+    function confirmPublish() {
+      const selectedOption = document.querySelector('input[name="publishOption"]:checked').value;
       
-      activityEditor.style.display = "flex";
-    }
-
-    // Format hour for display
-    function formatHour(hour) {
-      const period = hour >= 12 ? "pm" : "am";
-      const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-      return `${displayHour} ${period}`;
-    }
-
-    // Format time from interval index
-    function formatTimeFromIndex(index) {
-      // Each index represents 30 minutes, starting from midnight
-      const totalMinutes = index * 30;
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      const period = hours >= 12 ? "pm" : "am";
-      const displayHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
-      return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
-    }
-
-    // Update current time indicator
-    function updateCurrentTime() {
-      // Remove existing current time indicator
-      const existingIndicator = document.querySelector(".current-time");
-      if (existingIndicator) {
-        existingIndicator.remove();
+      let publishMessage = '';
+      
+      if (selectedOption === 'current') {
+        const currentDay = scheduleData.generatedSchedule.days[scheduleData.currentDayIndex];
+        publishMessage = `Publishing schedule for ${formatFullDate(currentDay.date)}`;
+      } else if (selectedOption === 'all') {
+        publishMessage = `Publishing entire schedule (${scheduleData.totalDays} days)`;
+      } else if (selectedOption === 'range') {
+        const startDate = document.getElementById('publishStartDate').value;
+        const endDate = document.getElementById('publishEndDate').value;
+        publishMessage = `Publishing schedule from ${formatDisplayDate(startDate)} to ${formatDisplayDate(endDate)}`;
       }
       
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
+      // In a real application, this would publish to a backend
+      console.log('Publishing:', selectedOption, publishMessage);
       
-      // Calculate grid position (assuming 7am start)
-      const startHour = 7;
-      const totalMinutes = (currentHour - startHour) * 60 + currentMinute;
+      // Update last published date
+      const today = new Date();
+      document.getElementById('lastPublishedDate').textContent = today.toLocaleDateString('en-GB', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
       
-      if (totalMinutes >= 0 && totalMinutes <= 16 * 60) { // 7am to 11pm
-        const gridPosition = (totalMinutes / 30) * 60; // Each 30-min interval = 60px
-        
-        const indicator = document.createElement("div");
-        indicator.className = "current-time";
-        indicator.style.left = `${200 + gridPosition}px`; // 200px for agent column
-        
-        document.querySelector(".schedule-grid-container").appendChild(indicator);
+      hidePublishModal();
+      showSaveIndicator('Schedule published successfully');
+      
+      alert(publishMessage + '\n\nSchedule has been successfully published!');
+    }
+
+    // Update statistics display
+    function updateStats() {
+      if (scheduleData.generatedSchedule) {
+        document.getElementById('totalHours').textContent = scheduleData.generatedSchedule.metrics.totalHours;
+        document.getElementById('coverage').textContent = scheduleData.generatedSchedule.metrics.coverage + '%';
+        document.getElementById('overtimeHours').textContent = scheduleData.generatedSchedule.metrics.overtime;
+        document.getElementById('coverageRate').textContent = scheduleData.generatedSchedule.metrics.coverage + '%';
       }
     }
 
@@ -1474,129 +1907,92 @@
         });
       });
       
-      // Activity editor
-      closeEditorBtn.addEventListener("click", () => {
-        activityEditor.style.display = "none";
-      });
-      
-      saveActivityBtn.addEventListener("click", () => {
-        const selectedActivity = document.querySelector(".activity-option.selected");
-        const selectedDuration = document.querySelector(".duration-btn.selected");
-        
-        if (selectedActivity && selectedDuration && selectedCell) {
-          const activityType = selectedActivity.dataset.activityType;
-          const duration = parseInt(selectedDuration.dataset.duration);
-          const timeSlotIndex = parseInt(selectedCell.dataset.interval) + 14; // Adjust for 7am start
-          
-          // Update schedule data
-          if (!scheduleData.activities[selectedAgent]) {
-            scheduleData.activities[selectedAgent] = {};
-          }
-          
-          // Clear any overlapping activities
-          Object.keys(scheduleData.activities[selectedAgent]).forEach(start => {
-            const activity = scheduleData.activities[selectedAgent][start];
-            const end = parseInt(start) + activity.duration;
-            
-            if (timeSlotIndex < end && (timeSlotIndex + duration) > parseInt(start)) {
-              delete scheduleData.activities[selectedAgent][start];
-            }
-          });
-          
-          // Add new activity
-          scheduleData.activities[selectedAgent][timeSlotIndex] = {
-            type: activityType,
-            duration: duration
-          };
-          
-          // Update UI
-          renderScheduleGrid();
-          activityEditor.style.display = "none";
-        }
-      });
-      
-      clearActivityBtn.addEventListener("click", () => {
-        if (selectedCell && selectedAgent) {
-          const timeSlotIndex = parseInt(selectedCell.dataset.interval) + 14;
-          
-          // Find and remove activity
-          if (scheduleData.activities[selectedAgent]) {
-            Object.keys(scheduleData.activities[selectedAgent]).forEach(start => {
-              const activity = scheduleData.activities[selectedAgent][start];
-              const end = parseInt(start) + activity.duration;
-              
-              if (timeSlotIndex >= parseInt(start) && timeSlotIndex < end) {
-                delete scheduleData.activities[selectedAgent][start];
-              }
-            });
-          }
-          
-          // Update UI
-          renderScheduleGrid();
-          activityEditor.style.display = "none";
-        }
-      });
-      
       // Date navigation
-      prevDayBtn.addEventListener("click", () => {
-        currentDate.setDate(currentDate.getDate() - 1);
-        updateDateDisplay();
-      });
+      prevDayBtn.addEventListener('click', navigatePrevDay);
+      nextDayBtn.addEventListener('click', navigateNextDay);
       
-      todayBtn.addEventListener("click", () => {
-        currentDate = new Date();
-        updateDateDisplay();
-      });
-      
-      nextDayBtn.addEventListener("click", () => {
-        currentDate.setDate(currentDate.getDate() + 1);
-        updateDateDisplay();
-      });
-      
-      // Interval buttons
-      intervalButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          intervalButtons.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          currentInterval = parseInt(btn.dataset.interval);
-          // Note: In a full implementation, this would regenerate the grid with the new interval
+      // Interval selector
+      intervalBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const interval = parseInt(btn.dataset.interval);
+          scheduleData.currentInterval = interval;
+          
+          intervalBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          if (scheduleData.generatedSchedule) {
+            renderDailySchedule();
+            renderNetStaffing();
+          }
         });
       });
+      
+      // Save changes button
+      saveChangesBtn.addEventListener('click', saveChanges);
       
       // Publish button
-      publishBtn.addEventListener("click", () => {
-        const today = new Date();
-        const publishDate = today.toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        });
-        
-        // Update publish info
-        document.querySelector(".publish-date").textContent = publishDate;
-        
-        // Show success message
-        alert(`Schedule published successfully!\n\nPublished on: ${publishDate}\nThe schedule is now visible to all team members.`);
+      publishBtn.addEventListener('click', showPublishModal);
+      
+      // Generate button
+      generateBtn.addEventListener('click', () => {
+        generateSampleSchedule();
+        renderDailySchedule();
+        renderNetStaffing();
+        updateDateDisplay();
+        showSaveIndicator('Schedule generated successfully');
       });
       
-      // Close editor when clicking outside
-      activityEditor.addEventListener("click", (e) => {
-        if (e.target === activityEditor) {
-          activityEditor.style.display = "none";
+      // Publish modal
+      publishModalCloseBtn.addEventListener('click', hidePublishModal);
+      confirmPublishBtn.addEventListener('click', confirmPublish);
+      cancelPublishBtn.addEventListener('click', hidePublishModal);
+      
+      // Close modal when clicking outside
+      publishModal.addEventListener('click', (e) => {
+        if (e.target === publishModal) {
+          hidePublishModal();
         }
       });
-    }
-
-    // Update date display
-    function updateDateDisplay() {
-      const dayOfWeek = currentDate.toLocaleDateString("en-GB", { weekday: "long" });
-      const dateStr = currentDate.toLocaleDateString("en-GB", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
+      
+      // Publish option selection
+      document.querySelectorAll('.publish-option').forEach(option => {
+        option.addEventListener('click', function() {
+          const radio = this.querySelector('input[type="radio"]');
+          radio.checked = true;
+          
+          document.querySelectorAll('.publish-option').forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          
+          // Show/hide date range inputs
+          if (radio.value === 'range') {
+            document.getElementById('dateRangeInputs').classList.add('active');
+          } else {
+            document.getElementById('dateRangeInputs').classList.remove('active');
+          }
+        });
       });
       
-      document.querySelector(".date-display").textContent = `${dayOfWeek}, ${dateStr}`;
+      // Save configuration
+      saveConfigBtn.addEventListener('click', () => {
+        const config = collectConfiguration();
+        console.log('Configuration saved:', config);
+        showSaveIndicator('Configuration saved');
+        
+        // Regenerate schedule with new configuration
+        generateSampleSchedule();
+        renderDailySchedule();
+        renderNetStaffing();
+      });
+      
+      // Export button
+      exportBtn.addEventListener('click', () => {
+        alert('Export functionality would be implemented here. In a real application, this would generate an Excel file.');
+      });
+      
+      // Print button
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
     }
 
     // Initialize the application
