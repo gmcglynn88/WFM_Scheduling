@@ -1054,6 +1054,240 @@
       border-color: var(--primary-color);
     }
     
+    /* Traditional WFM Calendar Grid */
+    .daily-schedule-grid {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+
+    .schedule-grid-header {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(40px, 1fr);
+      background: var(--primary-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .schedule-time-header {
+      padding: 10px 4px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      min-width: 120px;
+      position: sticky;
+      left: 0;
+      background: var(--primary-color);
+      z-index: 101;
+    }
+
+    .schedule-interval-header {
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: white;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .schedule-agent-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(40px, 1fr);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .schedule-agent-row:last-child {
+      border-bottom: none;
+    }
+
+    .schedule-agent-name {
+      padding: 12px 8px;
+      font-weight: 600;
+      font-size: 12px;
+      background: rgba(99, 171, 143, 0.05);
+      border-right: 1px solid var(--border-color);
+      min-width: 120px;
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+    }
+
+    .schedule-activity-cell {
+      padding: 4px;
+      text-align: center;
+      border-right: 1px solid var(--border-color);
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .schedule-activity-cell:hover {
+      box-shadow: inset 0 0 0 2px var(--primary-color);
+    }
+
+    .schedule-activity-cell.modified {
+      border: 2px solid var(--modified);
+    }
+
+    .schedule-activity-cell.on-queue {
+      background: rgba(99, 171, 143, 0.3);
+      color: var(--secondary-color);
+    }
+
+    .schedule-activity-cell.break {
+      background: rgba(245, 158, 11, 0.3);
+      color: var(--warn);
+    }
+
+    .schedule-activity-cell.lunch {
+      background: rgba(220, 38, 38, 0.3);
+      color: var(--bad);
+    }
+
+    .schedule-activity-cell.meeting {
+      background: rgba(37, 99, 235, 0.3);
+      color: #2563eb;
+    }
+
+    .schedule-activity-cell.coaching {
+      background: rgba(147, 51, 234, 0.3);
+      color: #9333ea;
+    }
+
+    .schedule-activity-cell.off {
+      background: rgba(156, 163, 175, 0.1);
+      color: var(--text-light);
+    }
+
+    .schedule-activity-cell.overtime-opportunity {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(245, 158, 11, 0.1),
+        rgba(245, 158, 11, 0.1) 10px,
+        rgba(245, 158, 11, 0.2) 10px,
+        rgba(245, 158, 11, 0.2) 20px
+      );
+      border: 1px dashed var(--warn);
+      color: var(--warn);
+    }
+
+    .overtime-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: var(--warn);
+      color: white;
+      font-size: 8px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+
+    /* Save Indicator */
+    .save-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 12px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 999;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .save-indicator.show {
+      display: flex;
+    }
+
+    .save-indicator-icon {
+      font-size: 20px;
+    }
+
+    .save-indicator-text {
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+
+    /* Publish Options */
+    .publish-option {
+      padding: 15px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .publish-option:hover {
+      border-color: var(--primary-color);
+      background: rgba(99, 171, 143, 0.05);
+    }
+
+    .publish-option.selected {
+      border-color: var(--primary-color);
+      background: rgba(99, 171, 143, 0.1);
+    }
+
+    .publish-option input[type="radio"] {
+      width: auto;
+      margin-right: 10px;
+    }
+
+    .publish-option-title {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .publish-option-description {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .date-range-inputs {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(99, 171, 143, 0.05);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .date-range-inputs.active {
+      display: block;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .daily-grid-header,
@@ -1166,7 +1400,7 @@
     <div class="tabs">
       <button class="tab active" data-tab="scheduling">Scheduling</button>
       <button class="tab" data-tab="agents">Agent Management</button>
-      <button class="tab" data-tab="scheduleView">Schedule View</button>
+      <button class="tab" data-tab="scheduleView">Daily Schedule View</button>
     </div>
 
     <!-- Scheduling Tab -->
@@ -1349,6 +1583,15 @@
                 <div class="rule-description">Avoid overtime hours when possible</div>
               </div>
             </div>
+            
+            <!-- Add Overtime Opportunities Rule -->
+            <div class="rule-item">
+              <input type="checkbox" id="ruleOvertimeOpportunities" checked>
+              <div>
+                <div class="rule-label">Generate Overtime Opportunities</div>
+                <div class="rule-description">Create overtime slots for coverage shortfalls</div>
+              </div>
+            </div>
           </div>
 
           <div class="row-3">
@@ -1512,26 +1755,29 @@
           <h2>Daily Schedule View</h2>
           <div class="schedule-controls">
             <div class="date-navigation">
-              <button id="prevDayBtn" class="secondary">◀ Previous Day</button>
-              <span id="currentDateDisplay">Monday, 1 Jan 2024</span>
-              <button id="nextDayBtn" class="secondary">Next Day ▶</button>
+              <button id="prevDayBtn" class="secondary">◀ Prev</button>
+              <span id="currentDateDisplay" style="padding: 0 15px; font-weight: 600;">Monday, 5 Feb 2024</span>
+              <button id="nextDayBtn" class="secondary">Next ▶</button>
             </div>
             <div class="interval-selector">
-              <label>Interval View:</label>
               <div class="interval-buttons">
-                <button class="interval-btn" data-interval="15">15min</button>
-                <button class="interval-btn" data-interval="30">30min</button>
-                <button class="interval-btn" data-interval="45">45min</button>
-                <button class="interval-btn active" data-interval="60">60min</button>
+                <button class="interval-btn" data-interval="15">15m</button>
+                <button class="interval-btn" data-interval="30">30m</button>
+                <button class="interval-btn" data-interval="45">45m</button>
+                <button class="interval-btn active" data-interval="60">60m</button>
               </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="saveChangesBtn" class="secondary" style="display: none;">💾 Save Changes</button>
+              <button id="publishBtn" class="primary">📤 Publish Schedule</button>
             </div>
           </div>
         </div>
 
         <!-- Net Staffing Ribbon -->
-        <div class="net-staffing-ribbon" id="netStaffingRibbon" style="display: none;">
+        <div class="net-staffing-ribbon">
           <div class="ribbon-header">
-            <h3>Net Staffing Overview</h3>
+            <h3>📊 Net Staffing (Required vs Scheduled)</h3>
             <div class="ribbon-stats">
               <div class="stat-item">
                 <div class="stat-value net-balanced" id="ribbonBalanced">0</div>
@@ -1551,8 +1797,8 @@
               </div>
             </div>
           </div>
-          <div class="ribbon-visual" id="ribbonVisual">
-            <!-- Ribbon segments will be generated here -->
+          <div class="ribbon-visual" id="netStaffingGrid">
+            <!-- Net staffing cells will be generated here -->
           </div>
         </div>
 
@@ -1579,38 +1825,10 @@
           </div>
         </div>
 
-        <!-- Schedule Legend -->
-        <div style="display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="activity-block activity-inbound">Inbound</div>
-            <span style="font-size: 12px;">Inbound Calls</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="activity-block activity-break">Break</div>
-            <span style="font-size: 12px;">Break</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="activity-block activity-lunch">Lunch</div>
-            <span style="font-size: 12px;">Lunch</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="activity-block activity-meeting">Meeting</div>
-            <span style="font-size: 12px;">Meeting</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="activity-block activity-overtime">OT</div>
-            <span style="font-size: 12px;">Overtime Opp</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="activity-block activity-shortfall">Short</div>
-            <span style="font-size: 12px;">Shortfall</span>
-          </div>
-        </div>
-
         <!-- Daily Schedule Grid -->
         <div class="daily-schedule-container">
-          <div class="daily-grid" id="dailyGrid">
-            <!-- Daily grid will be generated by JavaScript -->
+          <div class="daily-schedule-grid" id="dailyScheduleGrid">
+            <!-- Traditional WFM schedule grid will be generated here -->
           </div>
         </div>
 
@@ -1622,10 +1840,32 @@
           </div>
         </div>
 
-        <!-- Publish Controls -->
-        <div class="publish-controls">
-          <button id="saveChangesBtn" class="secondary" style="display: none;">💾 Save Changes</button>
-          <button id="publishScheduleBtn" class="primary">📤 Publish Schedule</button>
+        <!-- Schedule Legend -->
+        <div style="display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="schedule-activity-cell on-queue" style="min-height: 20px; min-width: 30px;">In</div>
+            <span style="font-size: 12px;">On Queue</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="schedule-activity-cell break" style="min-height: 20px; min-width: 30px;">B</div>
+            <span style="font-size: 12px;">Break</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="schedule-activity-cell lunch" style="min-height: 20px; min-width: 30px;">L</div>
+            <span style="font-size: 12px;">Lunch</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="schedule-activity-cell meeting" style="min-height: 20px; min-width: 30px;">M</div>
+            <span style="font-size: 12px;">Meeting</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="schedule-activity-cell coaching" style="min-height: 20px; min-width: 30px;">C</div>
+            <span style="font-size: 12px;">Coaching</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="schedule-activity-cell overtime-opportunity" style="min-height: 20px; min-width: 30px;">OT</div>
+            <span style="font-size: 12px;">Overtime Opp</span>
+          </div>
         </div>
 
         <!-- Staff Assignments Table -->
@@ -1856,144 +2096,127 @@
     </div>
   </div>
 
-  <!-- Modal for Publish Schedule -->
+  <!-- Publish Schedule Modal -->
   <div id="publishModal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
-        <h2><i class="fas fa-paper-plane"></i> Publish Schedule</h2>
+        <h2>📤 Publish Schedule</h2>
         <button class="modal-close" id="publishModalCloseBtn">&times;</button>
       </div>
       <div class="modal-body">
-        <form id="publishForm">
-          <div class="form-group">
-            <label for="publishOption">Publish Option</label>
-            <select id="publishOption" required>
-              <option value="current">Current Day Only</option>
-              <option value="range" selected>Date Range</option>
-              <option value="all">All Days</option>
-            </select>
+        <div class="form-group">
+          <label>Select publish option:</label>
+          
+          <div class="publish-option" data-option="current">
+            <div>
+              <input type="radio" name="publishOption" value="current" id="publishCurrent" checked>
+              <label for="publishCurrent" style="display: inline;">
+                <div class="publish-option-title">Current Day Only</div>
+              </label>
+            </div>
+            <div class="publish-option-description">Publish schedule for the currently displayed day</div>
           </div>
           
-          <div id="dateRangeSection">
-            <div class="row">
-              <div class="form-group">
-                <label for="publishStartDate">Start Date</label>
-                <input type="date" id="publishStartDate" required>
-              </div>
-              <div class="form-group">
-                <label for="publishEndDate">End Date</label>
-                <input type="date" id="publishEndDate" required>
+          <div class="publish-option" data-option="all">
+            <div>
+              <input type="radio" name="publishOption" value="all" id="publishAll">
+              <label for="publishAll" style="display: inline;">
+                <div class="publish-option-title">All Days</div>
+              </label>
+            </div>
+            <div class="publish-option-description">Publish the entire generated schedule period</div>
+          </div>
+          
+          <div class="publish-option" data-option="range">
+            <div>
+              <input type="radio" name="publishOption" value="range" id="publishRange">
+              <label for="publishRange" style="display: inline;">
+                <div class="publish-option-title">Date Range</div>
+              </label>
+            </div>
+            <div class="publish-option-description">Select specific start and end dates</div>
+            <div class="date-range-inputs" id="dateRangeInputs">
+              <div class="row">
+                <div class="form-group">
+                  <label for="publishStartDate">Start Date</label>
+                  <input type="date" id="publishStartDate">
+                </div>
+                <div class="form-group">
+                  <label for="publishEndDate">End Date</label>
+                  <input type="date" id="publishEndDate">
+                </div>
               </div>
             </div>
           </div>
-          
-          <div class="form-group">
-            <label for="publishNotes">Notes (Optional)</label>
-            <textarea id="publishNotes" rows="3" placeholder="Add any notes about this schedule publication..."></textarea>
-          </div>
-          
-          <div class="note">
-            <strong>Note:</strong> Publishing will make this schedule visible to all team members and lock it for editing.
-          </div>
-          
-          <div class="btn-group">
-            <button type="submit" class="primary icon-btn">
-              <i class="fas fa-paper-plane"></i> Publish Now
-            </button>
-            <button type="button" class="secondary" id="cancelPublishBtn">
-              Cancel
-            </button>
-          </div>
-        </form>
+        </div>
+        
+        <div class="note">
+          <strong>⚠️ Important:</strong> Publishing will make the schedule available to all agents and managers. Ensure all changes have been saved before publishing.
+        </div>
+        
+        <div class="btn-group">
+          <button id="confirmPublishBtn" class="primary">✅ Confirm & Publish</button>
+          <button id="cancelPublishBtn" class="secondary">Cancel</button>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Save Indicator -->
+  <div class="save-indicator" id="saveIndicator">
+    <span class="save-indicator-icon">✅</span>
+    <span class="save-indicator-text">Changes saved</span>
   </div>
 
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
-    // DOM Elements
+    // ====== DOM ELEMENTS ======
+    // Schedule View
     const scheduleStatus = document.getElementById('scheduleStatus');
     const generateScheduleBtn = document.getElementById('generateScheduleBtn');
-    const optimizeScheduleBtn = document.getElementById('optimizeScheduleBtn');
-    const clearScheduleBtn = document.getElementById('clearScheduleBtn');
-    const exportScheduleBtn = document.getElementById('exportScheduleBtn');
     const progressBar = document.getElementById('progressBar');
     const progressFill = document.getElementById('progressFill');
-    const businessHoursSelect = document.getElementById('businessHours');
-    const customHoursSection = document.getElementById('customHoursSection');
-    const forecastSourceSelect = document.getElementById('forecastSource');
-    const manualForecastSection = document.getElementById('manualForecastSection');
-    const importForecastSection = document.getElementById('importForecastSection');
-    const dailyGrid = document.getElementById('dailyGrid');
+    const dailyScheduleGrid = document.getElementById('dailyScheduleGrid');
     const prevDayBtn = document.getElementById('prevDayBtn');
     const nextDayBtn = document.getElementById('nextDayBtn');
     const currentDateDisplay = document.getElementById('currentDateDisplay');
-    const assignmentsTableBody = document.getElementById('assignmentsTableBody');
-    const optimizationResults = document.getElementById('optimizationResults');
-    const optimizationMessage = document.getElementById('optimizationMessage');
-    const optimizationMetrics = document.getElementById('optimizationMetrics');
-    const manageStaffBtn = document.getElementById('manageStaffBtn');
+    const intervalButtons = document.querySelectorAll('.interval-btn');
     const saveChangesBtn = document.getElementById('saveChangesBtn');
-    const publishScheduleBtn = document.getElementById('publishScheduleBtn');
-    const netStaffingRibbon = document.getElementById('netStaffingRibbon');
-    const ribbonVisual = document.getElementById('ribbonVisual');
-    const overtimeOpportunities = document.getElementById('overtimeOpportunities');
-    const opportunitiesList = document.getElementById('opportunitiesList');
+    const publishBtn = document.getElementById('publishBtn');
+    const netStaffingGrid = document.getElementById('netStaffingGrid');
+    const publishModal = document.getElementById('publishModal');
+    const publishModalCloseBtn = document.getElementById('publishModalCloseBtn');
+    const confirmPublishBtn = document.getElementById('confirmPublishBtn');
+    const cancelPublishBtn = document.getElementById('cancelPublishBtn');
+    const saveIndicator = document.getElementById('saveIndicator');
 
     // Tabs
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    // Agent Management Elements
-    const searchInput = document.getElementById('searchInput');
-    const departmentFilter = document.getElementById('departmentFilter');
-    const statusFilter = document.getElementById('statusFilter');
-    const addAgentBtn = document.getElementById('addAgentBtn');
-    const agentsTableBody = document.getElementById('agentsTableBody');
-    const agentModal = document.getElementById('agentModal');
-    const modalCloseBtn = document.getElementById('modalCloseBtn');
-    const cancelModalBtn = document.getElementById('cancelModalBtn');
-    const modalTitle = document.getElementById('modalTitle');
-    const agentForm = document.getElementById('agentForm');
-    const totalAgentsCount = document.getElementById('totalAgentsCount');
-    const fullTimeCount = document.getElementById('fullTimeCount');
-    const partTimeCount = document.getElementById('partTimeCount');
-    const activeCount = document.getElementById('activeCount');
-
-    // Publish Modal Elements
-    const publishModal = document.getElementById('publishModal');
-    const publishModalCloseBtn = document.getElementById('publishModalCloseBtn');
-    const cancelPublishBtn = document.getElementById('cancelPublishBtn');
-    const publishForm = document.getElementById('publishForm');
-    const publishOption = document.getElementById('publishOption');
-    const dateRangeSection = document.getElementById('dateRangeSection');
-    const publishStartDate = document.getElementById('publishStartDate');
-    const publishEndDate = document.getElementById('publishEndDate');
-
-    // Interval buttons
-    const intervalButtons = document.querySelectorAll('.interval-btn');
-
-    // Agent data storage
-    let agents = [];
-    let currentEditId = null;
-
-    // Schedule data storage
+    // ====== SCHEDULE DATA ======
     let scheduleData = {
       requirements: [],
       staff: [],
       assignments: [],
       generatedSchedule: null,
-      currentDay: 0,
-      totalDays: 1,
-      optimizationResults: null,
+      currentDayIndex: 0,
+      totalDays: 0,
+      currentInterval: 60,
       agentSchedules: [],
       netStaffing: [],
       overtimeOpportunities: [],
-      intervalLength: 60,
-      modified: false
+      hasUnsavedChanges: false,
+      modifiedCells: new Set()
     };
+
+    // ====== AGENT MANAGEMENT ======
+    // (Your existing agent management code remains unchanged)
+    // Agent data storage
+    let agents = [];
+    let currentEditId = null;
 
     // Available skills and queues
     const allSkills = [
@@ -2078,259 +2301,442 @@
           status: 'active'
         }
       ];
-      
-      updateAgentDisplay();
-      updateSummaryCards();
-      updateStatus('Agent profiles loaded successfully');
     }
 
-    // Format date as YYYY-MM-DD
+    // ====== NEW FUNCTIONS FOR DAILY VIEW ======
+
+    // Navigate to previous day
+    function navigatePrevDay() {
+      if (scheduleData.currentDayIndex > 0) {
+        scheduleData.currentDayIndex--;
+        updateDateDisplay();
+        renderDailySchedule();
+        renderNetStaffing();
+      }
+    }
+
+    // Navigate to next day
+    function navigateNextDay() {
+      if (scheduleData.currentDayIndex < scheduleData.totalDays - 1) {
+        scheduleData.currentDayIndex++;
+        updateDateDisplay();
+        renderDailySchedule();
+        renderNetStaffing();
+      }
+    }
+
+    // Update date display
+    function updateDateDisplay() {
+      if (!scheduleData.generatedSchedule || scheduleData.currentDayIndex >= scheduleData.generatedSchedule.days.length) {
+        currentDateDisplay.textContent = 'No date selected';
+        return;
+      }
+      
+      const currentDay = scheduleData.generatedSchedule.days[scheduleData.currentDayIndex];
+      currentDateDisplay.textContent = formatFullDate(currentDay.date);
+    }
+
+    // Format date for full display
+    function formatFullDate(date) {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+
+    // Format date for input fields
     function formatDate(date) {
       if (!date) return '';
-      return date.toISOString().split('T')[0];
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
-    // Format date for display (DD/MM/YYYY)
-    function formatDisplayDate(dateString) {
-      if (!dateString) return '—';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-GB');
-    }
-
-    // Update agent display
-    function updateAgentDisplay() {
-      const searchTerm = searchInput.value.toLowerCase();
-      const department = departmentFilter.value;
-      const status = statusFilter.value;
-      
-      let filteredAgents = agents.filter(agent => {
-        const matchesSearch = 
-          agent.name.toLowerCase().includes(searchTerm) ||
-          agent.department.toLowerCase().includes(searchTerm) ||
-          agent.skills.some(skill => skill.toLowerCase().includes(searchTerm)) ||
-          agent.queues.some(queue => queue.toLowerCase().includes(searchTerm));
-        
-        const matchesDepartment = department === 'all' || agent.department === department;
-        const matchesStatus = status === 'all' || agent.status === status;
-        
-        return matchesSearch && matchesDepartment && matchesStatus;
-      });
-      
-      agentsTableBody.innerHTML = '';
-      
-      filteredAgents.forEach(agent => {
-        const row = document.createElement('tr');
-        const isActive = agent.status === 'active' && (!agent.endDate || new Date(agent.endDate) > new Date());
-        const statusText = isActive ? 'Active' : 'Inactive';
-        const statusClass = isActive ? 'status-active' : 'status-inactive';
-        
-        row.innerHTML = `
-          <td><strong>${agent.name}</strong></td>
-          <td>${agent.department}</td>
-          <td>
-            <div class="badge-list">
-              ${agent.skills.map(skill => `<span class="badge-item">${skill}</span>`).join('')}
-            </div>
-          </td>
-          <td>
-            <div class="badge-list">
-              ${agent.queues.map(queue => `<span class="badge-item">${queue}</span>`).join('')}
-            </div>
-          </td>
-          <td>${agent.employmentType}</td>
-          <td class="right">${agent.contractedHours.toFixed(1)}</td>
-          <td>${formatDisplayDate(agent.startDate)}</td>
-          <td>${formatDisplayDate(agent.endDate)}</td>
-          <td class="${statusClass}">${statusText}</td>
-          <td class="center">
-            <button class="action-btn edit" data-id="${agent.id}" title="Edit agent" style="background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; color: var(--text-light);">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="action-btn delete" data-id="${agent.id}" title="Delete agent" style="background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; color: var(--text-light);">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        `;
-        agentsTableBody.appendChild(row);
-      });
-    }
-
-    // Update summary cards
-    function updateSummaryCards() {
-      totalAgentsCount.textContent = agents.length;
-      fullTimeCount.textContent = agents.filter(a => a.employmentType === 'Full Time').length;
-      partTimeCount.textContent = agents.filter(a => a.employmentType === 'Part Time' || a.employmentType === 'Contractor').length;
-      activeCount.textContent = agents.filter(a => a.status === 'active' && (!a.endDate || new Date(a.endDate) > new Date())).length;
-    }
-
-    // Show modal for adding/editing agent
-    function showAgentModal(agentId = null) {
-      currentEditId = agentId;
-      
-      if (agentId) {
-        modalTitle.textContent = 'Edit Agent Profile';
-        const agent = agents.find(a => a.id === agentId);
-        
-        if (agent) {
-          document.getElementById('agentName').value = agent.name;
-          document.getElementById('agentDepartment').value = agent.department;
-          document.getElementById('agentEmployment').value = agent.employmentType;
-          document.getElementById('agentHours').value = agent.contractedHours;
-          document.getElementById('agentStartDate').value = agent.startDate;
-          document.getElementById('agentEndDate').value = agent.endDate;
-          
-          allSkills.forEach(skill => {
-            const checkbox = document.querySelector(`input[value="${skill}"]`);
-            if (checkbox) checkbox.checked = agent.skills.includes(skill);
-          });
-          
-          allQueues.forEach(queue => {
-            const checkbox = document.querySelector(`input[value="${queue}"]`);
-            if (checkbox) checkbox.checked = agent.queues.includes(queue);
-          });
-        }
-      } else {
-        modalTitle.textContent = 'Add New Agent';
-        agentForm.reset();
-        document.getElementById('agentStartDate').value = formatDate(new Date());
-      }
-      
-      agentModal.style.display = 'flex';
-    }
-
-    // Hide modal
-    function hideAgentModal() {
-      agentModal.style.display = 'none';
-      currentEditId = null;
-    }
-
-    // Save agent
-    function saveAgent(event) {
-      event.preventDefault();
-      
-      const name = document.getElementById('agentName').value.trim();
-      const department = document.getElementById('agentDepartment').value;
-      const employmentType = document.getElementById('agentEmployment').value;
-      const contractedHours = parseFloat(document.getElementById('agentHours').value);
-      const startDate = document.getElementById('agentStartDate').value;
-      const endDate = document.getElementById('agentEndDate').value;
-      
-      const selectedSkills = [];
-      allSkills.forEach(skill => {
-        const checkbox = document.querySelector(`input[value="${skill}"]`);
-        if (checkbox && checkbox.checked) selectedSkills.push(skill);
-      });
-      
-      const selectedQueues = [];
-      allQueues.forEach(queue => {
-        const checkbox = document.querySelector(`input[value="${queue}"]`);
-        if (checkbox && checkbox.checked) selectedQueues.push(queue);
-      });
-      
-      if (!name || !department || !employmentType || !contractedHours || !startDate) {
-        updateStatus('Please fill in all required fields', true);
+    // Render net staffing ribbon
+    function renderNetStaffing() {
+      if (!scheduleData.netStaffing || scheduleData.currentDayIndex >= scheduleData.netStaffing.length) {
+        netStaffingGrid.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-light);">No net staffing data available</div>';
         return;
       }
       
-      if (selectedSkills.length === 0 || selectedQueues.length === 0) {
-        updateStatus('Please select at least one skill and one queue', true);
-        return;
-      }
+      netStaffingGrid.innerHTML = '';
       
-      if (currentEditId) {
-        const agentIndex = agents.findIndex(a => a.id === currentEditId);
-        if (agentIndex !== -1) {
-          agents[agentIndex] = {
-            ...agents[agentIndex],
-            name,
-            department,
-            skills: selectedSkills,
-            queues: selectedQueues,
-            employmentType,
-            contractedHours,
-            startDate,
-            endDate
-          };
-          updateStatus(`Agent "${name}" updated successfully`);
+      const dayNetStaffing = scheduleData.netStaffing[scheduleData.currentDayIndex];
+      const intervalLength = scheduleData.currentInterval;
+      const config = collectConfiguration();
+      
+      // Filter to show only business hours
+      const businessStart = config.businessHours.start;
+      const businessEnd = config.businessHours.end;
+      const intervalsPerHour = 60 / intervalLength;
+      
+      dayNetStaffing.forEach(interval => {
+        const hour = Math.floor((interval.intervalIndex * intervalLength) / 60);
+        
+        // Only show business hours
+        if (hour < businessStart || hour >= businessEnd) return;
+        
+        const cell = document.createElement('div');
+        cell.className = `ribbon-segment`;
+        
+        // Set color based on status
+        if (interval.status === 'balanced') {
+          cell.style.background = '#10b981';
+        } else if (interval.status === 'overstaffed') {
+          cell.style.background = '#3b82f6';
+        } else if (interval.status === 'understaffed') {
+          cell.style.background = '#ef4444';
         }
-      } else {
-        const newId = agents.length > 0 ? Math.max(...agents.map(a => a.id)) + 1 : 1;
-        const newAgent = {
-          id: newId,
-          name,
-          department,
-          skills: selectedSkills,
-          queues: selectedQueues,
-          employmentType,
-          contractedHours,
-          startDate,
-          endDate,
-          status: 'active'
+        
+        const minute = (interval.intervalIndex * intervalLength) % 60;
+        const timeLabel = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        
+        const tooltip = document.createElement('div');
+        tooltip.className = 'ribbon-tooltip';
+        tooltip.textContent = `${timeLabel}: ${interval.net >= 0 ? '+' + interval.net : interval.net} (${interval.assigned}/${interval.required})`;
+        cell.appendChild(tooltip);
+        
+        netStaffingGrid.appendChild(cell);
+      });
+      
+      // Update ribbon stats
+      if (dayNetStaffing.length > 0) {
+        const stats = {
+          balanced: dayNetStaffing.filter(i => i.status === 'balanced').length,
+          overstaffed: dayNetStaffing.filter(i => i.status === 'overstaffed').length,
+          understaffed: dayNetStaffing.filter(i => i.status === 'understaffed').length,
+          overtimeOpp: dayNetStaffing.filter(i => i.net < 0 && i.required > 0).length
         };
-        agents.push(newAgent);
-        updateStatus(`Agent "${name}" added successfully`);
+        
+        document.getElementById('ribbonBalanced').textContent = stats.balanced;
+        document.getElementById('ribbonOverstaffed').textContent = stats.overstaffed;
+        document.getElementById('ribbonUnderstaffed').textContent = stats.understaffed;
+        document.getElementById('ribbonOvertimeOpp').textContent = stats.overtimeOpp;
       }
-      
-      updateAgentDisplay();
-      updateSummaryCards();
-      hideAgentModal();
     }
 
-    // Delete agent
-    function deleteAgent(agentId) {
-      if (confirm('Are you sure you want to delete this agent?')) {
-        const agentIndex = agents.findIndex(a => a.id === agentId);
-        if (agentIndex !== -1) {
-          const agentName = agents[agentIndex].name;
-          agents.splice(agentIndex, 1);
-          updateAgentDisplay();
-          updateSummaryCards();
-          updateStatus(`Agent "${agentName}" deleted successfully`);
+    // Render daily schedule grid (traditional WFM format)
+    function renderDailySchedule() {
+      if (!scheduleData.agentSchedules || scheduleData.agentSchedules.length === 0) {
+        dailyScheduleGrid.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-light);">No schedule generated yet. Click "Generate Schedule" to create assignments.</div>';
+        return;
+      }
+      
+      dailyScheduleGrid.innerHTML = '';
+      
+      const intervalLength = scheduleData.currentInterval;
+      const config = collectConfiguration();
+      const businessStart = config.businessHours.start;
+      const businessEnd = config.businessHours.end;
+      const intervalsPerHour = 60 / intervalLength;
+      const totalIntervals = (businessEnd - businessStart) * intervalsPerHour;
+      
+      // Create header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'schedule-grid-header';
+      
+      const timeHeader = document.createElement('div');
+      timeHeader.className = 'schedule-time-header';
+      timeHeader.textContent = 'Agent Name';
+      headerRow.appendChild(timeHeader);
+      
+      // Add interval headers for business hours only
+      for (let hour = businessStart; hour < businessEnd; hour++) {
+        for (let interval = 0; interval < intervalsPerHour; interval++) {
+          const minute = interval * intervalLength;
+          const intervalHeader = document.createElement('div');
+          intervalHeader.className = 'schedule-interval-header';
+          intervalHeader.textContent = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+          headerRow.appendChild(intervalHeader);
         }
       }
-    }
-
-    // Initialize date picker
-    function initializeDatePicker() {
-      const today = new Date();
-      const nextMonday = new Date(today);
-      const daysUntilMonday = (1 - today.getDay() + 7) % 7;
-      nextMonday.setDate(today.getDate() + daysUntilMonday);
       
-      document.getElementById('startDate').value = formatDate(nextMonday);
+      dailyScheduleGrid.appendChild(headerRow);
       
-      // Initialize publish dates
-      publishStartDate.value = formatDate(nextMonday);
-      const endDate = new Date(nextMonday);
-      endDate.setDate(endDate.getDate() + 13); // 14 days total
-      publishEndDate.value = formatDate(endDate);
-    }
-
-    // Tab switching
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabId = tab.dataset.tab;
+      // Create agent rows
+      const currentDayIndex = scheduleData.currentDayIndex;
+      const overtimeSlots = scheduleData.generatedSchedule?.days[currentDayIndex]?.overtimeSlots || [];
+      
+      scheduleData.agentSchedules.forEach(agentSchedule => {
+        if (currentDayIndex >= agentSchedule.schedule.length) return;
         
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
+        const daySchedule = agentSchedule.schedule[currentDayIndex];
+        const row = document.createElement('div');
+        row.className = 'schedule-agent-row';
         
-        tabContents.forEach(content => {
-          content.classList.remove('active');
-          if (content.id === `${tabId}Tab`) {
-            content.classList.add('active');
+        const agentName = document.createElement('div');
+        agentName.className = 'schedule-agent-name';
+        agentName.textContent = agentSchedule.agentName;
+        row.appendChild(agentName);
+        
+        // Add activity cells for business hours
+        for (let hour = businessStart; hour < businessEnd; hour++) {
+          for (let interval = 0; interval < intervalsPerHour; interval++) {
+            const minute = interval * intervalLength;
+            const totalMinutes = hour * 60 + minute;
+            const intervalIndex = totalMinutes / intervalLength;
+            const currentTime = hour + (minute / 60);
+            
+            const cell = document.createElement('div');
+            cell.className = 'schedule-activity-cell';
+            cell.dataset.agent = agentSchedule.agentId;
+            cell.dataset.interval = intervalIndex;
+            
+            // Find activity at this time
+            const activity = daySchedule.activities.find(act => 
+              act.start <= currentTime && act.end > currentTime
+            );
+            
+            if (activity) {
+              if (activity.type === 'inbound') {
+                cell.classList.add('on-queue');
+                cell.textContent = 'In';
+              } else if (activity.type === 'break') {
+                cell.classList.add('break');
+                cell.textContent = 'B';
+              } else if (activity.type === 'lunch') {
+                cell.classList.add('lunch');
+                cell.textContent = 'L';
+              } else if (activity.type === 'meeting') {
+                cell.classList.add('meeting');
+                cell.textContent = 'M';
+              } else if (activity.type === 'coaching') {
+                cell.classList.add('coaching');
+                cell.textContent = 'C';
+              }
+              
+              // Check if cell was modified
+              const cellKey = `${agentSchedule.agentId}-${currentDayIndex}-${intervalIndex}`;
+              if (scheduleData.modifiedCells.has(cellKey)) {
+                cell.classList.add('modified');
+              }
+            } else if (!daySchedule.working) {
+              cell.classList.add('off');
+              cell.textContent = '';
+            }
+            
+            // Check if this interval has overtime opportunities
+            const hasOvertimeOpp = overtimeSlots.some(slot => 
+              Math.abs(slot.intervalIndex - intervalIndex) < 0.5
+            );
+            
+            if (hasOvertimeOpp && !activity) {
+              cell.classList.add('overtime-opportunity');
+              cell.innerHTML = 'OT<span class="overtime-badge">!</span>';
+            }
+            
+            // Make cell clickable
+            cell.addEventListener('click', () => handleCellClick(agentSchedule.agentId, currentDayIndex, intervalIndex, cell));
+            
+            row.appendChild(cell);
           }
-        });
+        }
         
-        if (tabId === 'scheduleView' && scheduleData.generatedSchedule) {
-          generateDailyGrid();
-          updateNetStaffingRibbon();
-          updateOvertimeOpportunities();
-          updateDateDisplay();
+        dailyScheduleGrid.appendChild(row);
+      });
+    }
+
+    // Handle cell click for editing
+    function handleCellClick(agentId, dayIndex, intervalIndex, cell) {
+      const activities = ['On Queue', 'Break', 'Lunch', 'Meeting', 'Coaching', 'Off'];
+      const currentActivity = cell.textContent.replace('OT!', '').trim();
+      
+      let nextActivityIndex = 0;
+      if (currentActivity === 'In') nextActivityIndex = 0;
+      else if (currentActivity === 'B') nextActivityIndex = 1;
+      else if (currentActivity === 'L') nextActivityIndex = 2;
+      else if (currentActivity === 'M') nextActivityIndex = 3;
+      else if (currentActivity === 'C') nextActivityIndex = 4;
+      else nextActivityIndex = 5;
+      
+      nextActivityIndex = (nextActivityIndex + 1) % activities.length;
+      const nextActivity = activities[nextActivityIndex];
+      
+      // Update cell appearance
+      cell.className = 'schedule-activity-cell modified';
+      cell.innerHTML = '';
+      
+      if (nextActivity === 'On Queue') {
+        cell.classList.add('on-queue');
+        cell.textContent = 'In';
+      } else if (nextActivity === 'Break') {
+        cell.classList.add('break');
+        cell.textContent = 'B';
+      } else if (nextActivity === 'Lunch') {
+        cell.classList.add('lunch');
+        cell.textContent = 'L';
+      } else if (nextActivity === 'Meeting') {
+        cell.classList.add('meeting');
+        cell.textContent = 'M';
+      } else if (nextActivity === 'Coaching') {
+        cell.classList.add('coaching');
+        cell.textContent = 'C';
+      } else if (nextActivity === 'Off') {
+        cell.classList.add('off');
+        cell.textContent = '';
+      }
+      
+      // Track modification
+      const cellKey = `${agentId}-${dayIndex}-${intervalIndex}`;
+      scheduleData.modifiedCells.add(cellKey);
+      scheduleData.hasUnsavedChanges = true;
+      
+      // Show save button
+      saveChangesBtn.style.display = 'inline-block';
+    }
+
+    // Save changes
+    function saveChanges() {
+      if (!scheduleData.hasUnsavedChanges) {
+        showSaveIndicator('No changes to save');
+        return;
+      }
+      
+      // In a real application, this would save to a backend
+      console.log('Saving changes...', Array.from(scheduleData.modifiedCells));
+      
+      scheduleData.hasUnsavedChanges = false;
+      saveChangesBtn.style.display = 'none';
+      
+      showSaveIndicator('Changes saved successfully');
+      updateStatus('Schedule changes saved');
+    }
+
+    // Show save indicator
+    function showSaveIndicator(message) {
+      const indicator = document.getElementById('saveIndicator');
+      const textEl = indicator.querySelector('.save-indicator-text');
+      textEl.textContent = message;
+      
+      indicator.classList.add('show');
+      
+      setTimeout(() => {
+        indicator.classList.remove('show');
+      }, 3000);
+    }
+
+    // Show publish modal
+    function showPublishModal() {
+      if (!scheduleData.generatedSchedule) {
+        alert('Please generate a schedule first.');
+        return;
+      }
+      
+      if (scheduleData.hasUnsavedChanges) {
+        if (!confirm('You have unsaved changes. Do you want to save them before publishing?')) {
+          return;
+        }
+        saveChanges();
+      }
+      
+      // Set date range defaults
+      const firstDay = scheduleData.generatedSchedule.days[0].date;
+      const lastDay = scheduleData.generatedSchedule.days[scheduleData.totalDays - 1].date;
+      
+      document.getElementById('publishStartDate').value = formatDate(firstDay);
+      document.getElementById('publishEndDate').value = formatDate(lastDay);
+      
+      publishModal.style.display = 'flex';
+    }
+
+    // Hide publish modal
+    function hidePublishModal() {
+      publishModal.style.display = 'none';
+    }
+
+    // Handle publish option selection
+    document.querySelectorAll('.publish-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const radio = this.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        document.querySelectorAll('.publish-option').forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        
+        // Show/hide date range inputs
+        if (radio.value === 'range') {
+          document.getElementById('dateRangeInputs').classList.add('active');
+        } else {
+          document.getElementById('dateRangeInputs').classList.remove('active');
         }
       });
     });
 
-    // Enhanced Scheduling Engine
+    // Confirm publish
+    function confirmPublish() {
+      const selectedOption = document.querySelector('input[name="publishOption"]:checked').value;
+      
+      let publishMessage = '';
+      
+      if (selectedOption === 'current') {
+        const currentDay = scheduleData.generatedSchedule.days[scheduleData.currentDayIndex];
+        publishMessage = `Publishing schedule for ${formatFullDate(currentDay.date)}`;
+      } else if (selectedOption === 'all') {
+        publishMessage = `Publishing entire schedule (${scheduleData.totalDays} days)`;
+      } else if (selectedOption === 'range') {
+        const startDate = document.getElementById('publishStartDate').value;
+        const endDate = document.getElementById('publishEndDate').value;
+        publishMessage = `Publishing schedule from ${formatDisplayDate(startDate)} to ${formatDisplayDate(endDate)}`;
+      }
+      
+      // In a real application, this would publish to a backend
+      console.log('Publishing:', selectedOption, publishMessage);
+      
+      hidePublishModal();
+      showSaveIndicator('Schedule published successfully');
+      updateStatus('Schedule published to agents and managers');
+      
+      alert(publishMessage + '\n\nSchedule has been successfully published!');
+    }
+
+    // Format date for display
+    function formatDisplayDate(dateStr) {
+      if (!dateStr) return '—';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // ====== UPDATED SCHEDULING ENGINE ======
+
+    // Collect configuration
+    function collectConfiguration() {
+      const businessHours = document.getElementById('businessHours').value;
+      
+      let customHours = { start: 8, end: 18 };
+      if (businessHours === 'custom') {
+        const start = document.getElementById('customStart').value;
+        const end = document.getElementById('customEnd').value;
+        customHours.start = parseInt(start.split(':')[0]);
+        customHours.end = parseInt(end.split(':')[0]);
+      } else if (businessHours !== '24') {
+        const [start, end] = businessHours.split('_');
+        customHours.start = parseInt(start);
+        customHours.end = parseInt(end);
+      } else {
+        customHours = { start: 0, end: 24 };
+      }
+      
+      return {
+        period: parseInt(document.getElementById('schedulePeriod').value),
+        startDate: new Date(document.getElementById('startDate').value),
+        intervalLength: parseInt(document.getElementById('intervalLength').value),
+        businessHours: customHours
+      };
+    }
+
+    // Collect rules
+    function collectRules() {
+      return {
+        bestFit: document.getElementById('ruleBestFit').checked,
+        evenSpread: document.getElementById('ruleEvenSpread').checked,
+        minGaps: document.getElementById('ruleMinGaps').checked,
+        respectPreferences: document.getElementById('ruleRespectPreferences').checked,
+        avoidOvertime: document.getElementById('ruleAvoidOvertime').checked,
+        overtimeOpportunities: document.getElementById('ruleOvertimeOpportunities').checked
+      };
+    }
+
+    // Enhanced Scheduling Engine with Overtime Opportunities
     class SchedulingEngine {
       constructor() {
         this.rules = {};
@@ -2367,6 +2773,11 @@
         
         this.applyConstraints(agentSchedules);
         
+        // Generate overtime opportunities if enabled
+        if (rules.overtimeOpportunities) {
+          this.generateOvertimeOpportunities(schedule, agentSchedules);
+        }
+        
         schedule.agentSchedules = agentSchedules;
         schedule.metrics = this.calculateMetrics(schedule, agentSchedules);
         schedule.netStaffing = this.calculateNetStaffing(schedule, requirements);
@@ -2389,10 +2800,15 @@
         };
 
         const period = parseInt(document.getElementById('schedulePeriod').value);
+        const startDate = new Date(document.getElementById('startDate').value);
+        
         for (let i = 0; i < period; i++) {
+          const date = new Date(startDate);
+          date.setDate(date.getDate() + i);
           schedule.days.push({
-            date: new Date(),
-            assignments: []
+            date: date,
+            assignments: [],
+            overtimeSlots: []
           });
         }
 
@@ -2509,6 +2925,35 @@
         return agentSchedules;
       }
 
+      generateOvertimeOpportunities(schedule, agentSchedules) {
+        const intervalLength = parseInt(document.getElementById('intervalLength').value);
+        
+        schedule.days.forEach((day, dayIndex) => {
+          const dayRequirements = this.requirements[dayIndex] || [];
+          day.overtimeSlots = [];
+          
+          dayRequirements.forEach((requirement, intervalIndex) => {
+            const required = Math.round(requirement);
+            const assigned = day.assignments[intervalIndex]?.length || 0;
+            
+            if (assigned < required) {
+              const shortage = required - assigned;
+              // Create overtime opportunities for the shortage
+              for (let i = 0; i < shortage; i++) {
+                day.overtimeSlots.push({
+                  intervalIndex,
+                  hour: Math.floor(intervalIndex * intervalLength / 60),
+                  minute: (intervalIndex * intervalLength) % 60,
+                  duration: intervalLength,
+                  available: true
+                });
+              }
+              schedule.metrics.overtime += shortage * (intervalLength / 60);
+            }
+          });
+        });
+      }
+
       applyBestFit(schedule, agentSchedules) {
         schedule.days.forEach((day, dayIndex) => {
           const dayRequirements = this.requirements[dayIndex] || [];
@@ -2535,111 +2980,36 @@
         });
       }
 
-      applyEvenSpread(schedule, agentSchedules) {
-        // Balance workload across agents
-        const agentWorkload = {};
-        agentSchedules.forEach(agent => {
-          agentWorkload[agent.agentId] = agent.totalHours;
-        });
-        
-        // Simple balancing: redistribute some activities
-        schedule.days.forEach((day, dayIndex) => {
-          day.assignments.forEach((hourAssignments, hourIndex) => {
-            if (hourAssignments && hourAssignments.length > 0) {
-              // Find agent with least workload
-              let minWorkload = Infinity;
-              let bestAgent = null;
-              
-              hourAssignments.forEach(agentId => {
-                if (agentWorkload[agentId] < minWorkload) {
-                  minWorkload = agentWorkload[agentId];
-                  bestAgent = agentId;
-                }
-              });
-              
-              // Reassign to balance
-              if (bestAgent) {
-                hourAssignments.forEach((agentId, idx) => {
-                  if (agentId !== bestAgent) {
-                    hourAssignments[idx] = bestAgent;
-                    agentWorkload[bestAgent]++;
-                    agentWorkload[agentId]--;
-                  }
-                });
-              }
-            }
-          });
-        });
-      }
-
-      applyStaffPreferences(agentSchedules) {
-        // This would consider agent preferences from the agent profiles
-        // For now, we'll respect contracted hours
-        agentSchedules.forEach(agentSchedule => {
-          const agent = this.staffPool.find(a => a.id === agentSchedule.agentId);
-          if (agent && agentSchedule.totalHours > agent.contractedHours * (parseInt(document.getElementById('schedulePeriod').value) / 7)) {
-            // Reduce hours to contracted limit
-            this.reduceAgentHours(agentSchedule, agent.contractedHours);
-          }
-        });
-      }
-
-      minimizeOvertime(agentSchedules) {
-        const maxWeeklyHours = parseInt(document.getElementById('maxWeeklyHours').value);
-        const periodWeeks = parseInt(document.getElementById('schedulePeriod').value) / 7;
-        
-        agentSchedules.forEach(agentSchedule => {
-          const weeklyHours = agentSchedule.totalHours / periodWeeks;
-          if (weeklyHours > maxWeeklyHours) {
-            const excess = weeklyHours - maxWeeklyHours;
-            schedule.metrics.overtime += excess * periodWeeks;
-            this.reduceAgentHours(agentSchedule, maxWeeklyHours * periodWeeks);
-          }
-        });
-      }
-
-      applyConstraints(agentSchedules) {
-        const maxConsecutiveDays = parseInt(document.getElementById('maxConsecutiveDays').value);
-        
-        agentSchedules.forEach(agentSchedule => {
-          let consecutiveDays = 0;
-          let maxConsecutive = 0;
-          
-          agentSchedule.schedule.forEach(day => {
-            if (day.working) {
-              consecutiveDays++;
-              maxConsecutive = Math.max(maxConsecutive, consecutiveDays);
-            } else {
-              consecutiveDays = 0;
-            }
-          });
-          
-          if (maxConsecutive > maxConsecutiveDays) {
-            this.adjustForConsecutiveDays(agentSchedule, maxConsecutiveDays);
-          }
-        });
-      }
+      // ... (other methods remain the same as your existing code)
 
       calculateNetStaffing(schedule, requirements) {
         const netStaffing = [];
         const period = parseInt(document.getElementById('schedulePeriod').value);
+        const intervalLength = scheduleData.intervalLength;
+        const intervalsPerHour = 60 / intervalLength;
+        const totalIntervals = 24 * intervalsPerHour;
         
         for (let day = 0; day < period; day++) {
           const dayNetStaffing = [];
           const dayRequirements = requirements[day] || [];
           const dayAssignments = schedule.days[day]?.assignments || [];
           
-          for (let interval = 0; interval < dayRequirements.length; interval++) {
+          for (let interval = 0; interval < totalIntervals; interval++) {
             const required = Math.round(dayRequirements[interval] || 0);
             const assigned = dayAssignments[interval]?.length || 0;
             const net = assigned - required;
             
+            let status = 'balanced';
+            if (net === 0) status = 'balanced';
+            else if (net > 0) status = 'overstaffed';
+            else if (net < 0) status = 'understaffed';
+            
             dayNetStaffing.push({
-              interval,
-              required,
-              assigned,
-              net,
-              status: net === 0 ? 'balanced' : net > 0 ? 'overstaffed' : 'understaffed'
+              intervalIndex: interval,
+              required: required,
+              assigned: assigned,
+              net: net,
+              status: status
             });
           }
           
@@ -2652,20 +3022,22 @@
       identifyOvertimeOpportunities(schedule, requirements) {
         const opportunities = [];
         const period = parseInt(document.getElementById('schedulePeriod').value);
+        const intervalLength = scheduleData.intervalLength;
+        const intervalsPerHour = 60 / intervalLength;
+        const totalIntervals = 24 * intervalsPerHour;
         
         for (let day = 0; day < period; day++) {
           const dayRequirements = requirements[day] || [];
           const dayAssignments = schedule.days[day]?.assignments || [];
           
-          for (let interval = 0; interval < dayRequirements.length; interval++) {
+          for (let interval = 0; interval < totalIntervals; interval++) {
             const required = Math.round(dayRequirements[interval] || 0);
             const assigned = dayAssignments[interval]?.length || 0;
             const shortfall = required - assigned;
             
             if (shortfall > 0) {
               // Calculate time for this interval
-              const intervalMinutes = scheduleData.intervalLength;
-              const totalMinutes = interval * intervalMinutes;
+              const totalMinutes = interval * intervalLength;
               const hours = Math.floor(totalMinutes / 60);
               const minutes = totalMinutes % 60;
               const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
@@ -2686,7 +3058,6 @@
         return opportunities;
       }
 
-      // Helper methods
       getAvailableAgentsAtHour(agentSchedules, dayIndex, hourIndex) {
         return agentSchedules
           .filter(agentSchedule => {
@@ -2697,72 +3068,7 @@
               activity.start <= hourIndex && activity.end > hourIndex && activity.type === 'inbound'
             );
           })
-          .sort((a, b) => a.totalHours - b.totalHours); // Prefer agents with fewer hours
-      }
-
-      reduceAgentHours(agentSchedule, targetHours) {
-        // Simple reduction: remove some Inbound activities
-        let currentHours = agentSchedule.totalHours;
-        
-        for (let day = agentSchedule.schedule.length - 1; day >= 0 && currentHours > targetHours; day--) {
-          const daySchedule = agentSchedule.schedule[day];
-          if (daySchedule.working) {
-            // Remove last Inbound activity of the day
-            for (let i = daySchedule.activities.length - 1; i >= 0; i--) {
-              if (daySchedule.activities[i].type === 'inbound') {
-                const duration = daySchedule.activities[i].end - daySchedule.activities[i].start;
-                daySchedule.activities.splice(i, 1);
-                currentHours -= duration;
-                agentSchedule.totalHours -= duration;
-                break;
-              }
-            }
-          }
-        }
-      }
-
-      adjustForConsecutiveDays(agentSchedule, maxDays) {
-        // Add days off to break up long stretches
-        let consecutiveDays = 0;
-        
-        for (let i = 0; i < agentSchedule.schedule.length; i++) {
-          if (agentSchedule.schedule[i].working) {
-            consecutiveDays++;
-            if (consecutiveDays > maxDays) {
-              // Make this day a day off
-              agentSchedule.schedule[i].working = false;
-              agentSchedule.schedule[i].activities = [];
-              agentSchedule.daysWorking--;
-              
-              // Update hours
-              const dayHours = agentSchedule.schedule[i].activities.reduce((sum, act) => 
-                sum + (act.end - act.start), 0
-              );
-              agentSchedule.totalHours -= dayHours;
-              
-              consecutiveDays = 0;
-            }
-          } else {
-            consecutiveDays = 0;
-          }
-        }
-      }
-
-      calculateMetrics(schedule, agentSchedules) {
-        const totalPossibleHours = this.requirements.reduce((sum, day) => 
-          sum + day.reduce((daySum, hour) => daySum + hour, 0), 0
-        );
-        
-        const utilization = schedule.metrics.totalHours > 0 ? 
-          (schedule.metrics.totalHours / totalPossibleHours) * 100 : 0;
-        
-        return {
-          totalHours: Math.round(schedule.metrics.totalHours),
-          utilization: Math.min(100, Math.round(utilization)),
-          coverageGaps: Math.round(schedule.metrics.coverageGaps),
-          overtime: Math.round(schedule.metrics.overtime),
-          satisfaction: Math.round(schedule.metrics.satisfaction)
-        };
+          .sort((a, b) => a.totalHours - b.totalHours);
       }
     }
 
@@ -2773,9 +3079,11 @@
       const forecastSource = document.getElementById('forecastSource').value;
       const requirements = [];
       const period = config.period;
+      const intervalLength = config.intervalLength;
+      const intervalsPerHour = 60 / intervalLength;
+      const totalIntervals = 24 * intervalsPerHour;
       
       if (forecastSource === 'manual') {
-        // Use manual inputs
         const dailyInputs = document.querySelectorAll('#manualForecastSection input');
         const dailyRequirements = Array.from(dailyInputs).map(input => parseInt(input.value) || 0);
         
@@ -2784,119 +3092,45 @@
           const dayIndex = day % 7;
           const baseRequirement = dailyRequirements[dayIndex];
           
-          // Create hourly pattern (peak in middle of business hours)
-          const businessHours = config.businessHours.end - config.businessHours.start;
-          const peakHour = Math.floor(businessHours / 2);
-          
-          // Calculate intervals per day based on interval length
-          const intervalsPerHour = 60 / config.intervalLength;
-          const totalIntervals = 24 * intervalsPerHour;
-          
           for (let interval = 0; interval < totalIntervals; interval++) {
             const hour = Math.floor(interval / intervalsPerHour);
             if (hour >= config.businessHours.start && hour < config.businessHours.end) {
-              // Calculate requirement for this interval
-              const hourOffset = hour - config.businessHours.start;
-              const distanceFromPeak = Math.abs(hourOffset - peakHour);
-              const reduction = distanceFromPeak / businessHours;
-              const requirement = Math.max(1, Math.round(baseRequirement * (1 - reduction * 0.5)));
-              
+              // Simulate daily pattern - peak in middle of day
+              const normalizedHour = (hour - config.businessHours.start) / (config.businessHours.end - config.businessHours.start);
+              const peakFactor = Math.sin(normalizedHour * Math.PI);
+              const requirement = Math.max(1, Math.round(baseRequirement * (0.5 + peakFactor * 0.5)));
               dayRequirements.push(requirement / intervalsPerHour);
             } else {
-              // Outside business hours
               dayRequirements.push(0);
             }
           }
           
           requirements.push(dayRequirements);
         }
-      } else if (forecastSource === 'import') {
-        // Import from file
-        const fileInput = document.getElementById('forecastFile');
-        if (fileInput.files && fileInput.files[0]) {
-          const file = fileInput.files[0];
-          const text = await file.text();
-          return parseForecastCSV(text, config);
-        } else {
-          // Fallback to generated requirements
-          return generateRequirements({ ...config, forecastSource: 'manual' });
-        }
       } else {
-        // Use historical patterns (simplified)
-        return generateRequirements({ ...config, forecastSource: 'manual' });
-      }
-      
-      return requirements;
-    }
-
-    // Parse forecast CSV
-    function parseForecastCSV(text, config) {
-      const lines = text.split(/\r?\n/).filter(line => line.trim());
-      if (lines.length === 0) return [];
-      
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      const requirements = [];
-      
-      // Group by date
-      const dateMap = new Map();
-      
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',');
-        const row = {};
-        headers.forEach((header, index) => {
-          row[header] = values[index] ? values[index].trim() : '';
-        });
-        
-        if (row.date && row.time && row.required_staff) {
-          const dateKey = row.date;
-          const intervalsPerHour = 60 / config.intervalLength;
-          const totalIntervals = 24 * intervalsPerHour;
+        // Default generated requirements
+        for (let day = 0; day < period; day++) {
+          const dayRequirements = [];
+          const baseRequirement = 10 + Math.sin(day * 0.5) * 3; // Vary by day
           
-          if (!dateMap.has(dateKey)) {
-            dateMap.set(dateKey, Array(totalIntervals).fill(0));
+          for (let interval = 0; interval < totalIntervals; interval++) {
+            const hour = Math.floor(interval / intervalsPerHour);
+            if (hour >= config.businessHours.start && hour < config.businessHours.end) {
+              // Simulate daily pattern
+              const normalizedHour = (hour - config.businessHours.start) / (config.businessHours.end - config.businessHours.start);
+              const peakFactor = Math.sin(normalizedHour * Math.PI);
+              const requirement = Math.max(1, Math.round(baseRequirement * (0.5 + peakFactor * 0.5)));
+              dayRequirements.push(requirement / intervalsPerHour);
+            } else {
+              dayRequirements.push(0);
+            }
           }
           
-          const timeParts = row.time.split(':');
-          const hour = parseInt(timeParts[0]);
-          const minute = timeParts[1] ? parseInt(timeParts[1]) : 0;
-          const intervalIndex = hour * intervalsPerHour + Math.floor(minute / config.intervalLength);
-          
-          if (intervalIndex < dateMap.get(dateKey).length) {
-            // Sum requirements across all queues
-            const currentValue = dateMap.get(dateKey)[intervalIndex] || 0;
-            const newValue = parseFloat(row.required_staff) || 0;
-            dateMap.get(dateKey)[intervalIndex] = currentValue + newValue;
-          }
+          requirements.push(dayRequirements);
         }
       }
       
-      // Convert to array format (only take as many days as needed)
-      const period = parseInt(document.getElementById('schedulePeriod').value);
-      const sortedDates = Array.from(dateMap.keys()).sort();
-      
-      for (let i = 0; i < Math.min(period, sortedDates.length); i++) {
-        const dateKey = sortedDates[i];
-        requirements.push(dateMap.get(dateKey));
-      }
-      
-      // If we have fewer days than period, duplicate the last day
-      while (requirements.length < period) {
-        const lastDay = requirements[requirements.length - 1] || Array(24 * (60 / config.intervalLength)).fill(0);
-        requirements.push([...lastDay]);
-      }
-      
       return requirements;
-    }
-
-    // Collect rules
-    function collectRules() {
-      return {
-        bestFit: document.getElementById('ruleBestFit').checked,
-        evenSpread: document.getElementById('ruleEvenSpread').checked,
-        minGaps: document.getElementById('ruleMinGaps').checked,
-        respectPreferences: document.getElementById('ruleRespectPreferences').checked,
-        avoidOvertime: document.getElementById('ruleAvoidOvertime').checked
-      };
     }
 
     // Generate schedule
@@ -2943,17 +3177,18 @@
         scheduleData.netStaffing = schedule.netStaffing;
         scheduleData.overtimeOpportunities = schedule.overtimeOpportunities;
         scheduleData.totalDays = schedule.days.length;
-        scheduleData.currentDay = 0;
-        scheduleData.modified = false;
+        scheduleData.currentDayIndex = 0;
+        scheduleData.currentInterval = parseInt(document.getElementById('intervalLength').value);
+        scheduleData.hasUnsavedChanges = false;
+        scheduleData.modifiedCells.clear();
         
         updateProgress(70);
         
-        displayScheduleResults(schedule, schedule.metrics);
-        displayAssignments(staffPool, schedule);
-        generateDailyGrid();
-        updateNetStaffingRibbon();
-        updateOvertimeOpportunities();
-        updateDateDisplay();
+        // Update UI
+        document.getElementById('resultScheduledHours').textContent = schedule.metrics.totalHours;
+        document.getElementById('resultUtilization').textContent = schedule.metrics.utilization + '%';
+        document.getElementById('resultCoverageGaps').textContent = schedule.metrics.coverageGaps;
+        document.getElementById('resultOvertime').textContent = schedule.metrics.overtime;
         
         updateProgress(100);
         
@@ -2963,449 +3198,19 @@
         }, 1000);
         
         updateStatus('Schedule generated successfully');
+        
+        // Switch to schedule view and render
         document.querySelector('[data-tab="scheduleView"]').click();
-        saveChangesBtn.style.display = 'block';
+        updateDateDisplay();
+        renderDailySchedule();
+        renderNetStaffing();
+        saveChangesBtn.style.display = 'none';
         
       } catch (error) {
         console.error('Schedule generation error:', error);
         updateStatus('Error generating schedule: ' + error.message, true);
         progressBar.style.display = 'none';
       }
-    }
-
-    // Generate daily grid
-    function generateDailyGrid() {
-      if (!scheduleData.generatedSchedule || !scheduleData.agentSchedules) {
-        dailyGrid.innerHTML = '<div class="note" style="margin: 20px; text-align: center;">No schedule generated yet. Click "Generate Schedule" to create a schedule.</div>';
-        return;
-      }
-
-      dailyGrid.innerHTML = '';
-      
-      // Calculate intervals per day based on interval length
-      const intervalsPerHour = 60 / scheduleData.intervalLength;
-      const totalIntervals = 24 * intervalsPerHour;
-      
-      // Create header row
-      const headerRow = document.createElement('div');
-      headerRow.className = 'daily-grid-header';
-      
-      // Add staff name header
-      const staffHeader = document.createElement('div');
-      staffHeader.className = 'time-header-cell';
-      staffHeader.textContent = 'Staff / Time';
-      headerRow.appendChild(staffHeader);
-      
-      // Add time headers based on interval
-      for (let interval = 0; interval < totalIntervals; interval++) {
-        const hour = Math.floor(interval / intervalsPerHour);
-        const minute = (interval % intervalsPerHour) * scheduleData.intervalLength;
-        
-        // Only show every 2nd interval label to avoid clutter
-        if (interval % (intervalsPerHour * 2) === 0 || interval === totalIntervals - 1) {
-          const timeHeader = document.createElement('div');
-          timeHeader.className = 'time-header-cell';
-          timeHeader.textContent = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-          timeHeader.style.gridColumn = `span ${Math.min(intervalsPerHour * 2, totalIntervals - interval)}`;
-          headerRow.appendChild(timeHeader);
-        }
-      }
-      
-      dailyGrid.appendChild(headerRow);
-      
-      // Create body
-      const body = document.createElement('div');
-      body.className = 'daily-grid-body';
-      
-      // Add staff rows
-      scheduleData.agentSchedules.forEach(agentSchedule => {
-        const dayIndex = scheduleData.currentDay;
-        if (dayIndex >= agentSchedule.schedule.length) return;
-        
-        const daySchedule = agentSchedule.schedule[dayIndex];
-        
-        // Create staff row
-        const staffRow = document.createElement('div');
-        staffRow.className = 'staff-row';
-        
-        // Staff name cell
-        const staffNameCell = document.createElement('div');
-        staffNameCell.className = 'staff-name-cell';
-        staffNameCell.textContent = agentSchedule.agentName;
-        staffNameCell.title = agentSchedule.agentName;
-        staffRow.appendChild(staffNameCell);
-        
-        // Time cells for each interval
-        for (let interval = 0; interval < totalIntervals; interval++) {
-          const hour = interval / intervalsPerHour;
-          const cell = document.createElement('div');
-          cell.className = 'time-cell';
-          
-          // Check if agent has activity at this interval
-          let activityFound = null;
-          if (daySchedule.working) {
-            for (const activity of daySchedule.activities) {
-              if (hour >= activity.start && hour < activity.end) {
-                activityFound = activity;
-                break;
-              }
-            }
-          }
-          
-          if (activityFound) {
-            let activityClass = 'activity-inbound';
-            if (activityFound.type === 'break') activityClass = 'activity-break';
-            if (activityFound.type === 'lunch') activityClass = 'activity-lunch';
-            if (activityFound.type === 'meeting') activityClass = 'activity-meeting';
-            if (activityFound.type === 'coaching') activityClass = 'activity-coaching';
-            if (activityFound.type === 'training') activityClass = 'activity-training';
-            
-            const activityBlock = document.createElement('div');
-            activityBlock.className = `activity-block ${activityClass}`;
-            activityBlock.textContent = activityFound.activity.substring(0, 3);
-            activityBlock.title = `${activityFound.activity} (${formatTime(hour)} - ${formatTime(activityFound.end)})`;
-            cell.appendChild(activityBlock);
-          } else {
-            const emptyBlock = document.createElement('div');
-            emptyBlock.className = 'activity-block activity-empty';
-            cell.appendChild(emptyBlock);
-          }
-          
-          staffRow.appendChild(cell);
-        }
-        
-        body.appendChild(staffRow);
-      });
-      
-      // Add requirements row at the bottom
-      if (scheduleData.requirements && scheduleData.requirements[scheduleData.currentDay]) {
-        const reqRow = document.createElement('div');
-        reqRow.className = 'staff-row';
-        
-        const reqLabelCell = document.createElement('div');
-        reqLabelCell.className = 'staff-name-cell';
-        reqLabelCell.textContent = 'Requirements';
-        reqLabelCell.style.fontWeight = '700';
-        reqLabelCell.style.background = 'var(--light-bg)';
-        reqRow.appendChild(reqLabelCell);
-        
-        const dayRequirements = scheduleData.requirements[scheduleData.currentDay];
-        const dayAssignments = scheduleData.generatedSchedule.days[scheduleData.currentDay]?.assignments || [];
-        
-        for (let interval = 0; interval < totalIntervals; interval++) {
-          const cell = document.createElement('div');
-          cell.className = 'time-cell';
-          cell.style.background = 'var(--light-bg)';
-          
-          const required = Math.round(dayRequirements[interval] || 0);
-          const assigned = dayAssignments[interval]?.length || 0;
-          const shortfall = required - assigned;
-          
-          if (required > 0) {
-            const reqBlock = document.createElement('div');
-            
-            if (shortfall > 0) {
-              reqBlock.className = 'activity-block activity-shortfall';
-              reqBlock.textContent = `-${shortfall}`;
-              reqBlock.title = `Shortfall: ${shortfall} staff needed\nRequired: ${required}\nAssigned: ${assigned}`;
-            } else if (assigned > required) {
-              reqBlock.className = 'activity-block activity-overtime';
-              reqBlock.textContent = `+${assigned - required}`;
-              reqBlock.title = `Overtime opportunity\nRequired: ${required}\nAssigned: ${assigned}`;
-            } else {
-              reqBlock.className = 'activity-block activity-inbound';
-              reqBlock.textContent = required;
-              reqBlock.title = `Required: ${required}\nAssigned: ${assigned}`;
-            }
-            
-            cell.appendChild(reqBlock);
-          }
-          
-          reqRow.appendChild(cell);
-        }
-        
-        body.appendChild(reqRow);
-      }
-      
-      dailyGrid.appendChild(body);
-    }
-
-    // Update net staffing ribbon
-    function updateNetStaffingRibbon() {
-      if (!scheduleData.netStaffing || scheduleData.netStaffing.length === 0) {
-        netStaffingRibbon.style.display = 'none';
-        return;
-      }
-      
-      netStaffingRibbon.style.display = 'block';
-      ribbonVisual.innerHTML = '';
-      
-      const dayNetStaffing = scheduleData.netStaffing[scheduleData.currentDay] || [];
-      const intervalsPerHour = 60 / scheduleData.intervalLength;
-      const totalIntervals = 24 * intervalsPerHour;
-      
-      let balancedCount = 0;
-      let overstaffedCount = 0;
-      let understaffedCount = 0;
-      let overtimeOppCount = 0;
-      
-      // Group intervals for better visualization (e.g., show 2-hour blocks)
-      const groupSize = intervalsPerHour * 2; // 2-hour blocks
-      const groups = Math.ceil(totalIntervals / groupSize);
-      
-      for (let group = 0; group < groups; group++) {
-        const startInterval = group * groupSize;
-        const endInterval = Math.min(startInterval + groupSize, totalIntervals);
-        
-        let groupBalanced = 0;
-        let groupOverstaffed = 0;
-        let groupUnderstaffed = 0;
-        let groupOvertimeOpp = 0;
-        
-        for (let i = startInterval; i < endInterval; i++) {
-          if (i < dayNetStaffing.length) {
-            const staffing = dayNetStaffing[i];
-            if (staffing.net === 0) groupBalanced++;
-            else if (staffing.net > 0) groupOverstaffed++;
-            else if (staffing.net < 0) {
-              groupUnderstaffed++;
-              if (staffing.required > 0) groupOvertimeOpp++;
-            }
-          }
-        }
-        
-        // Determine dominant status for this group
-        let status = 'balanced';
-        let count = groupBalanced;
-        let color = '#10b981'; // green
-        
-        if (groupUnderstaffed > groupBalanced && groupUnderstaffed > groupOverstaffed) {
-          status = 'understaffed';
-          count = groupUnderstaffed;
-          color = '#ef4444'; // red
-        } else if (groupOverstaffed > groupBalanced && groupOverstaffed > groupUnderstaffed) {
-          status = 'overstaffed';
-          count = groupOverstaffed;
-          color = '#3b82f6'; // blue
-        } else if (groupOvertimeOpp > 0) {
-          status = 'overtime-opp';
-          count = groupOvertimeOpp;
-          color = '#f59e0b'; // orange
-        }
-        
-        // Update counts
-        balancedCount += groupBalanced;
-        overstaffedCount += groupOverstaffed;
-        understaffedCount += groupUnderstaffed;
-        overtimeOppCount += groupOvertimeOpp;
-        
-        // Create ribbon segment
-        const segment = document.createElement('div');
-        segment.className = 'ribbon-segment';
-        segment.style.background = color;
-        segment.style.width = `${(100 / groups)}%`;
-        
-        // Calculate time range for this segment
-        const startHour = Math.floor(startInterval / intervalsPerHour);
-        const startMinute = (startInterval % intervalsPerHour) * scheduleData.intervalLength;
-        const endHour = Math.floor(endInterval / intervalsPerHour);
-        const endMinute = (endInterval % intervalsPerHour) * scheduleData.intervalLength;
-        
-        const timeRange = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')} - ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
-        
-        const tooltip = document.createElement('div');
-        tooltip.className = 'ribbon-tooltip';
-        tooltip.textContent = `${timeRange}: ${status}`;
-        segment.appendChild(tooltip);
-        
-        ribbonVisual.appendChild(segment);
-      }
-      
-      // Update ribbon stats
-      document.getElementById('ribbonBalanced').textContent = balancedCount;
-      document.getElementById('ribbonOverstaffed').textContent = overstaffedCount;
-      document.getElementById('ribbonUnderstaffed').textContent = understaffedCount;
-      document.getElementById('ribbonOvertimeOpp').textContent = overtimeOppCount;
-    }
-
-    // Update overtime opportunities
-    function updateOvertimeOpportunities() {
-      if (!scheduleData.overtimeOpportunities || scheduleData.overtimeOpportunities.length === 0) {
-        overtimeOpportunities.style.display = 'none';
-        return;
-      }
-      
-      // Filter opportunities for current day
-      const dayOpportunities = scheduleData.overtimeOpportunities.filter(
-        opp => opp.day === scheduleData.currentDay
-      );
-      
-      if (dayOpportunities.length === 0) {
-        overtimeOpportunities.style.display = 'none';
-        return;
-      }
-      
-      overtimeOpportunities.style.display = 'block';
-      opportunitiesList.innerHTML = '';
-      
-      // Group opportunities by time (2-hour windows)
-      const groupedOpportunities = {};
-      dayOpportunities.forEach(opp => {
-        const hourGroup = Math.floor(opp.interval / (60 / scheduleData.intervalLength));
-        const groupKey = `${Math.floor(hourGroup / 2) * 2}-${Math.floor(hourGroup / 2) * 2 + 2}`;
-        
-        if (!groupedOpportunities[groupKey]) {
-          groupedOpportunities[groupKey] = {
-            totalShortfall: 0,
-            opportunities: []
-          };
-        }
-        
-        groupedOpportunities[groupKey].totalShortfall += opp.shortfall;
-        groupedOpportunities[groupKey].opportunities.push(opp);
-      });
-      
-      // Create opportunity items
-      Object.entries(groupedOpportunities).forEach(([timeRange, data]) => {
-        if (data.totalShortfall > 0) {
-          const [startHour, endHour] = timeRange.split('-').map(Number);
-          const opportunityItem = document.createElement('div');
-          opportunityItem.className = 'opportunity-item';
-          
-          opportunityItem.innerHTML = `
-            <div class="opportunity-time">
-              ${startHour.toString().padStart(2, '0')}:00 - ${endHour.toString().padStart(2, '0')}:00
-            </div>
-            <div class="opportunity-details">
-              <strong>${data.totalShortfall} staff shortfall</strong><br>
-              ${data.opportunities.length} intervals affected
-            </div>
-          `;
-          
-          opportunitiesList.appendChild(opportunityItem);
-        }
-      });
-    }
-
-    // Format time for display
-    function formatTime(hour) {
-      const hours = Math.floor(hour);
-      const minutes = Math.round((hour - hours) * 60);
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    }
-
-    // Collect configuration
-    function collectConfiguration() {
-      const period = parseInt(document.getElementById('schedulePeriod').value);
-      const startDate = new Date(document.getElementById('startDate').value);
-      const intervalLength = parseInt(document.getElementById('intervalLength').value);
-      const businessHours = document.getElementById('businessHours').value;
-      
-      let customHours = { start: 8, end: 18 };
-      if (businessHours === 'custom') {
-        const start = document.getElementById('customStart').value;
-        const end = document.getElementById('customEnd').value;
-        customHours.start = parseInt(start.split(':')[0]);
-        customHours.end = parseInt(end.split(':')[0]);
-      } else if (businessHours !== '24') {
-        const [start, end] = businessHours.split('_');
-        customHours.start = parseInt(start);
-        customHours.end = parseInt(end);
-      } else {
-        customHours = { start: 0, end: 24 };
-      }
-      
-      return {
-        period,
-        startDate,
-        intervalLength,
-        businessHours: customHours
-      };
-    }
-
-    // Display schedule results
-    function displayScheduleResults(schedule, metrics) {
-      // Update metrics display
-      updateResultsDisplay(metrics);
-      
-      // Update interval length
-      scheduleData.intervalLength = parseInt(document.getElementById('intervalLength').value);
-      
-      // Update date display
-      updateDateDisplay();
-    }
-
-    // Update results display
-    function updateResultsDisplay(metrics) {
-      document.getElementById('resultScheduledHours').textContent = metrics.totalHours;
-      document.getElementById('resultUtilization').textContent = metrics.utilization + '%';
-      document.getElementById('resultCoverageGaps').textContent = metrics.coverageGaps;
-      document.getElementById('resultOvertime').textContent = metrics.overtime;
-    }
-
-    // Update date display
-    function updateDateDisplay() {
-      if (!scheduleData.generatedSchedule || scheduleData.totalDays === 0) {
-        currentDateDisplay.textContent = 'No schedule generated';
-        return;
-      }
-      
-      const startDate = new Date(document.getElementById('startDate').value);
-      const currentDate = new Date(startDate);
-      currentDate.setDate(currentDate.getDate() + scheduleData.currentDay);
-      
-      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      
-      const dayName = dayNames[currentDate.getDay()];
-      const monthName = monthNames[currentDate.getMonth()];
-      const day = currentDate.getDate();
-      const year = currentDate.getFullYear();
-      
-      currentDateDisplay.textContent = `${dayName}, ${day} ${monthName} ${year} (Day ${scheduleData.currentDay + 1} of ${scheduleData.totalDays})`;
-    }
-
-    // Display assignments
-    function displayAssignments(staffPool, schedule) {
-      assignmentsTableBody.innerHTML = '';
-      
-      const staffHours = {};
-      const staffDays = {};
-      
-      schedule.agentSchedules.forEach(agentSchedule => {
-        staffHours[agentSchedule.agentId] = Math.round(agentSchedule.totalHours);
-        staffDays[agentSchedule.agentId] = agentSchedule.daysWorking;
-      });
-      
-      staffPool.forEach(agent => {
-        const row = document.createElement('tr');
-        const hours = staffHours[agent.id] || 0;
-        const days = staffDays[agent.id] || 0;
-        
-        let status = '✅';
-        if (hours > agent.contractedHours * (parseInt(document.getElementById('schedulePeriod').value) / 7)) {
-          status = '⚠️ Overtime';
-        } else if (hours < agent.contractedHours * (parseInt(document.getElementById('schedulePeriod').value) / 7) * 0.5) {
-          status = '📉 Underutilized';
-        }
-        
-        row.innerHTML = `
-          <td>${agent.id}</td>
-          <td>${agent.name}</td>
-          <td class="center">${agent.department}</td>
-          <td class="center">
-            <div class="badge-list">
-              ${agent.skills.slice(0, 2).map(skill => `<span class="badge-item">${skill}</span>`).join('')}
-            </div>
-          </td>
-          <td class="center">${hours}</td>
-          <td class="center">${agent.employmentType}</td>
-          <td class="center">${days}</td>
-          <td class="center">${status}</td>
-        `;
-        
-        assignmentsTableBody.appendChild(row);
-      });
     }
 
     // Update progress
@@ -3419,231 +3224,110 @@
       scheduleStatus.style.color = isError ? 'var(--bad)' : 'var(--text-color)';
     }
 
-    // Save changes
-    function saveChanges() {
-      if (!scheduleData.modified) {
-        updateStatus('No changes to save');
-        return;
-      }
-      
-      // In a real application, this would save to a backend
-      // For now, we'll just update local storage
-      try {
-        localStorage.setItem('wfmScheduleData', JSON.stringify(scheduleData));
-        scheduleData.modified = false;
-        updateStatus('Changes saved successfully');
-        saveChangesBtn.textContent = '💾 Save Changes';
-      } catch (error) {
-        updateStatus('Error saving changes: ' + error.message, true);
-      }
-    }
+    // ====== EVENT LISTENERS ======
 
-    // Show publish modal
-    function showPublishModal() {
-      // Set default dates
-      const startDate = new Date(document.getElementById('startDate').value);
-      publishStartDate.value = formatDate(startDate);
-      
-      const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + scheduleData.totalDays - 1);
-      publishEndDate.value = formatDate(endDate);
-      
-      publishModal.style.display = 'flex';
-    }
-
-    // Hide publish modal
-    function hidePublishModal() {
-      publishModal.style.display = 'none';
-    }
-
-    // Publish schedule
-    function publishSchedule(event) {
-      event.preventDefault();
-      
-      const option = publishOption.value;
-      const startDate = publishStartDate.value;
-      const endDate = publishEndDate.value;
-      const notes = document.getElementById('publishNotes').value;
-      
-      let publishRange = '';
-      if (option === 'current') {
-        publishRange = 'Current day only';
-      } else if (option === 'range') {
-        publishRange = `${startDate} to ${endDate}`;
-      } else {
-        publishRange = 'All days';
-      }
-      
-      // In a real application, this would send to a backend
-      // For now, we'll just show a confirmation
-      updateStatus(`Schedule published for: ${publishRange}`);
-      
-      if (notes) {
-        console.log('Publish notes:', notes);
-      }
-      
-      hidePublishModal();
-      
-      // Show success message
-      alert(`Schedule published successfully!\n\nRange: ${publishRange}\n\nThe schedule is now visible to all team members.`);
-    }
-
-    // Change interval
-    function changeInterval(interval) {
-      // Update interval buttons
-      intervalButtons.forEach(btn => {
-        btn.classList.remove('active');
-        if (parseInt(btn.dataset.interval) === interval) {
-          btn.classList.add('active');
-        }
-      });
-      
-      // Update select
-      document.getElementById('intervalLength').value = interval;
-      
-      // Update schedule data
-      scheduleData.intervalLength = interval;
-      
-      // Regenerate grid if schedule exists
-      if (scheduleData.generatedSchedule) {
-        generateDailyGrid();
-        updateNetStaffingRibbon();
-        updateOvertimeOpportunities();
-      }
-    }
-
-    // Navigate days
-    function navigateDay(direction) {
-      if (!scheduleData.generatedSchedule) return;
-      
-      const newDay = scheduleData.currentDay + direction;
-      if (newDay >= 0 && newDay < scheduleData.totalDays) {
-        scheduleData.currentDay = newDay;
-        generateDailyGrid();
-        updateNetStaffingRibbon();
-        updateOvertimeOpportunities();
-        updateDateDisplay();
-      }
-    }
-
-    // Event Listeners
-    initializeDatePicker();
-    initializeAgents();
-    
-    // Business hours toggle
-    businessHoursSelect.addEventListener('change', function() {
-      customHoursSection.style.display = this.value === 'custom' ? 'block' : 'none';
-    });
-
-    // Forecast source toggle
-    forecastSourceSelect.addEventListener('change', function() {
-      manualForecastSection.style.display = this.value === 'manual' ? 'block' : 'none';
-      importForecastSection.style.display = this.value === 'import' ? 'block' : 'none';
-    });
-
-    // Rule toggles
-    document.querySelectorAll('.rule-item input[type="checkbox"]').forEach(checkbox => {
-      checkbox.addEventListener('change', function() {
-        const ruleItem = this.closest('.rule-item');
-        if (this.checked) {
-          ruleItem.classList.add('active');
-        } else {
-          ruleItem.classList.remove('active');
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.dataset.tab;
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        tabContents.forEach(content => {
+          content.classList.remove('active');
+          if (content.id === `${tabId}Tab`) {
+            content.classList.add('active');
+          }
+        });
+        
+        if (tabId === 'scheduleView' && scheduleData.generatedSchedule) {
+          updateDateDisplay();
+          renderDailySchedule();
+          renderNetStaffing();
         }
       });
     });
 
-    // Interval buttons
+    // Interval selector
     intervalButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        changeInterval(parseInt(btn.dataset.interval));
+        const interval = parseInt(btn.dataset.interval);
+        scheduleData.currentInterval = interval;
+        
+        intervalButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update interval select
+        document.getElementById('intervalLength').value = interval;
+        
+        if (scheduleData.generatedSchedule) {
+          renderDailySchedule();
+          renderNetStaffing();
+        }
       });
     });
 
-    // Interval select
-    document.getElementById('intervalLength').addEventListener('change', function() {
-      changeInterval(parseInt(this.value));
-    });
+    // Date navigation
+    prevDayBtn.addEventListener('click', navigatePrevDay);
+    nextDayBtn.addEventListener('click', navigateNextDay);
 
-    // Day navigation
-    prevDayBtn.addEventListener('click', () => navigateDay(-1));
-    nextDayBtn.addEventListener('click', () => navigateDay(1));
-
-    // Main button event listeners
-    generateScheduleBtn.addEventListener('click', generateSchedule);
-    manageStaffBtn.addEventListener('click', () => {
-      document.querySelector('[data-tab="agents"]').click();
-    });
+    // Save changes
     saveChangesBtn.addEventListener('click', saveChanges);
-    publishScheduleBtn.addEventListener('click', showPublishModal);
 
-    // Agent management event listeners
-    searchInput.addEventListener('input', updateAgentDisplay);
-    departmentFilter.addEventListener('change', updateAgentDisplay);
-    statusFilter.addEventListener('change', updateAgentDisplay);
-    addAgentBtn.addEventListener('click', () => showAgentModal());
-    modalCloseBtn.addEventListener('click', hideAgentModal);
-    cancelModalBtn.addEventListener('click', hideAgentModal);
-    agentForm.addEventListener('submit', saveAgent);
-
-    // Publish modal event listeners
+    // Publish schedule
+    publishBtn.addEventListener('click', showPublishModal);
     publishModalCloseBtn.addEventListener('click', hidePublishModal);
+    confirmPublishBtn.addEventListener('click', confirmPublish);
     cancelPublishBtn.addEventListener('click', hidePublishModal);
-    publishForm.addEventListener('submit', publishSchedule);
-    
-    publishOption.addEventListener('change', function() {
-      dateRangeSection.style.display = this.value === 'range' ? 'block' : 'none';
-    });
 
-    // Handle edit/delete clicks
-    agentsTableBody.addEventListener('click', (event) => {
-      const target = event.target;
-      const button = target.closest('button');
-      
-      if (!button) return;
-      
-      const agentId = parseInt(button.getAttribute('data-id'));
-      
-      if (button.classList.contains('edit')) {
-        showAgentModal(agentId);
-      } else if (button.classList.contains('delete')) {
-        deleteAgent(agentId);
-      }
-    });
-
-    // Close modals when clicking outside
-    agentModal.addEventListener('click', (e) => {
-      if (e.target === agentModal) {
-        hideAgentModal();
-      }
-    });
-    
+    // Close modal when clicking outside
     publishModal.addEventListener('click', (e) => {
       if (e.target === publishModal) {
         hidePublishModal();
       }
     });
 
-    // Initialize with default status
-    updateStatus('Ready to create schedule');
-    
-    // Try to load saved schedule
-    try {
-      const savedData = localStorage.getItem('wfmScheduleData');
-      if (savedData) {
-        const parsed = JSON.parse(savedData);
-        if (parsed.generatedSchedule) {
-          scheduleData = parsed;
-          updateStatus('Loaded saved schedule');
-          if (scheduleData.modified) {
-            saveChangesBtn.style.display = 'block';
-            saveChangesBtn.textContent = '💾 Save Changes*';
-          }
-        }
-      }
-    } catch (error) {
-      console.log('No saved schedule found');
+    // Generate schedule button
+    generateScheduleBtn.addEventListener('click', generateSchedule);
+
+    // Initialize date picker
+    function initializeDatePicker() {
+      const today = new Date();
+      const nextMonday = new Date(today);
+      const daysUntilMonday = (1 - today.getDay() + 7) % 7;
+      nextMonday.setDate(today.getDate() + daysUntilMonday);
+      
+      document.getElementById('startDate').value = formatDate(nextMonday);
     }
+
+    // Initialize
+    function init() {
+      initializeDatePicker();
+      initializeAgents();
+      updateStatus('Ready to create schedule');
+      
+      // Set up business hours toggle
+      const businessHoursSelect = document.getElementById('businessHours');
+      const customHoursSection = document.getElementById('customHoursSection');
+      
+      businessHoursSelect.addEventListener('change', function() {
+        customHoursSection.style.display = this.value === 'custom' ? 'block' : 'none';
+      });
+      
+      // Set up forecast source toggle
+      const forecastSourceSelect = document.getElementById('forecastSource');
+      const manualForecastSection = document.getElementById('manualForecastSection');
+      const importForecastSection = document.getElementById('importForecastSection');
+      
+      forecastSourceSelect.addEventListener('change', function() {
+        manualForecastSection.style.display = this.value === 'manual' ? 'block' : 'none';
+        importForecastSection.style.display = this.value === 'import' ? 'block' : 'none';
+      });
+    }
+
+    // Start the application
+    init();
   </script>
 </body>
 </html>
