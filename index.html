@@ -25,6 +25,10 @@
       --chart-3: #A8D5BA;
       --chart-4: #C7E8D3;
       --modified: #8b5cf6;
+      --overstaffed: #3b82f6;
+      --understaffed: #ef4444;
+      --shortfall: #dc2626;
+      --overtime-opp: #f59e0b;
     }
     
     body, h1, h2, h3, h4, h5, h6, p, div, span, label, button, input, select, textarea, th, td, li, ul, ol {
@@ -319,6 +323,7 @@
       display: flex;
       gap: 12px;
       align-items: center;
+      flex-wrap: wrap;
     }
     
     .date-navigation {
@@ -332,92 +337,321 @@
       min-width: auto;
     }
 
-    /* Schedule Grid */
-    .schedule-grid {
+    /* Publish Controls */
+    .publish-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .publish-controls button {
+      min-width: 150px;
+    }
+
+    /* Net Staffing Ribbon */
+    .net-staffing-ribbon {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    
+    .ribbon-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .ribbon-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--secondary-color);
+    }
+    
+    .ribbon-stats {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+    
+    .net-overstaffed {
+      color: var(--overstaffed);
+    }
+    
+    .net-understaffed {
+      color: var(--understaffed);
+    }
+    
+    .net-balanced {
+      color: var(--good);
+    }
+    
+    .net-overtime {
+      color: var(--overtime-opp);
+    }
+    
+    .ribbon-visual {
+      display: flex;
+      height: 40px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    
+    .ribbon-segment {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.2s;
+      position: relative;
+    }
+    
+    .ribbon-segment:hover {
+      filter: brightness(1.1);
+      z-index: 10;
+    }
+    
+    .ribbon-tooltip {
+      position: absolute;
+      top: -40px;
+      background: var(--text-color);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    
+    .ribbon-segment:hover .ribbon-tooltip {
+      opacity: 1;
+    }
+
+    /* Daily Schedule Grid */
+    .daily-schedule-container {
+      margin-top: 20px;
+    }
+    
+    .daily-grid {
       border: 1px solid var(--border-color);
       border-radius: 8px;
       overflow: hidden;
       background: white;
-      margin-top: 20px;
-    }
-    
-    .schedule-row {
-      display: grid;
-      grid-template-columns: 120px repeat(24, 1fr);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .schedule-row:last-child {
-      border-bottom: none;
-    }
-    
-    .time-header {
-      background: var(--primary-color);
-      color: white;
-      padding: 12px;
-      font-weight: 600;
-      font-size: 13px;
-      text-align: center;
-    }
-    
-    .hour-header {
-      background: rgba(99, 171, 143, 0.1);
-      padding: 8px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--secondary-color);
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .hour-header:last-child {
-      border-right: none;
-    }
-    
-    .schedule-cell {
-      padding: 8px;
-      text-align: center;
-      border-right: 1px solid var(--border-color);
-      min-height: 60px;
       position: relative;
     }
     
-    .schedule-cell:last-child {
-      border-right: none;
+    .daily-grid-header {
+      display: grid;
+      grid-template-columns: 80px repeat(auto-fit, minmax(40px, 1fr));
+      background: var(--light-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
     
-    .schedule-cell.available {
-      background: rgba(99, 171, 143, 0.1);
-    }
-    
-    .schedule-cell.assigned {
-      background: rgba(99, 171, 143, 0.3);
+    .time-header-cell {
+      padding: 12px 8px;
+      text-align: center;
       font-weight: 600;
+      font-size: 12px;
       color: var(--secondary-color);
+      border-right: 1px solid var(--border-color);
+      background: var(--light-bg);
     }
     
-    .schedule-cell.unavailable {
+    .daily-grid-body {
+      display: grid;
+      grid-template-columns: 80px repeat(auto-fit, minmax(40px, 1fr));
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .staff-row {
+      display: contents;
+    }
+    
+    .staff-name-cell {
+      padding: 12px 8px;
+      font-weight: 600;
+      font-size: 13px;
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      background: white;
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .time-cell {
+      padding: 12px 4px;
+      text-align: center;
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.2s;
+    }
+    
+    .time-cell:hover {
+      transform: scale(1.05);
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .activity-block {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 11px;
+      text-align: center;
+      padding: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    
+    .activity-block:hover {
+      filter: brightness(1.1);
+    }
+    
+    .activity-inbound {
+      background: var(--schedule-assigned);
+      color: white;
+    }
+    
+    .activity-break {
+      background: linear-gradient(45deg, #f59e0b, #fbbf24);
+      color: white;
+    }
+    
+    .activity-lunch {
+      background: linear-gradient(45deg, #dc2626, #ef4444);
+      color: white;
+    }
+    
+    .activity-meeting {
+      background: linear-gradient(45deg, #3b82f6, #60a5fa);
+      color: white;
+    }
+    
+    .activity-coaching {
+      background: linear-gradient(45deg, #8b5cf6, #a78bfa);
+      color: white;
+    }
+    
+    .activity-training {
+      background: linear-gradient(45deg, #10b981, #34d399);
+      color: white;
+    }
+    
+    .activity-overtime {
+      background: repeating-linear-gradient(
+        45deg,
+        var(--overtime-opp),
+        var(--overtime-opp) 10px,
+        #fbbf24 10px,
+        #fbbf24 20px
+      );
+      color: white;
+      border: 2px solid var(--warn);
+    }
+    
+    .activity-shortfall {
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--shortfall),
+        var(--shortfall) 10px,
+        #fca5a5 10px,
+        #fca5a5 20px
+      );
+      color: white;
+      border: 2px solid var(--bad);
+    }
+    
+    .activity-empty {
       background: rgba(156, 163, 175, 0.1);
       color: var(--text-light);
     }
     
-    .schedule-cell.overtime {
+    .time-slot-header {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    .overtime-opportunities {
+      margin-top: 24px;
+      padding: 16px;
       background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+    }
+    
+    .overtime-opportunities h4 {
+      margin: 0 0 12px 0;
       color: var(--warn);
+      font-size: 16px;
     }
     
-    .staff-count {
-      font-size: 14px;
-      font-weight: 700;
+    .opportunities-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
     }
     
-    .requirement-count {
-      font-size: 11px;
+    .opportunity-item {
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    
+    .opportunity-time {
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 4px;
+    }
+    
+    .opportunity-details {
+      font-size: 12px;
       color: var(--text-light);
-      position: absolute;
-      bottom: 2px;
-      right: 4px;
     }
 
     /* Results Summary */
@@ -782,83 +1016,49 @@
       padding: 24px;
     }
     
-    /* Activity Blocks */
-    .activity-block {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+    /* Interval Selector */
+    .interval-selector {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .interval-selector label {
+      margin-bottom: 0;
       font-weight: 600;
-      margin: 1px;
-      min-width: 60px;
-      text-align: center;
     }
     
-    .activity-inbound {
-      background: rgba(99, 171, 143, 0.3);
-      border: 1px solid rgba(99, 171, 143, 0.5);
-      color: var(--secondary-color);
+    .interval-buttons {
+      display: flex;
+      gap: 8px;
     }
     
-    .activity-break {
-      background: rgba(245, 158, 11, 0.3);
-      border: 1px solid rgba(245, 158, 11, 0.5);
-      color: var(--warn);
-    }
-    
-    .activity-lunch {
-      background: rgba(220, 38, 38, 0.3);
-      border: 1px solid rgba(220, 38, 38, 0.5);
-      color: var(--bad);
-    }
-    
-    .activity-meeting {
-      background: rgba(37, 99, 235, 0.3);
-      border: 1px solid rgba(37, 99, 235, 0.5);
-      color: #2563eb;
-    }
-    
-    .activity-coaching {
-      background: rgba(147, 51, 234, 0.3);
-      border: 1px solid rgba(147, 51, 234, 0.5);
-      color: #9333ea;
-    }
-
-    /* Staff Schedule View */
-    .staff-schedule-grid {
+    .interval-btn {
+      padding: 8px 16px;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
       background: white;
-      margin-top: 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
     }
     
-    .staff-schedule-row {
-      display: grid;
-      grid-template-columns: 120px repeat(24, 1fr);
-      border-bottom: 1px solid var(--border-color);
+    .interval-btn:hover {
+      background: rgba(99, 171, 143, 0.1);
     }
     
-    .staff-schedule-row:last-child {
-      border-bottom: none;
-    }
-    
-    .staff-schedule-cell {
-      padding: 8px;
-      text-align: center;
-      border-right: 1px solid var(--border-color);
-      min-height: 40px;
-    }
-    
-    .staff-schedule-cell:last-child {
-      border-right: none;
+    .interval-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
     }
     
     /* Responsive */
     @media (max-width: 1024px) {
-      .schedule-row {
+      .daily-grid-header,
+      .daily-grid-body {
         grid-template-columns: 100px repeat(12, 1fr);
-        font-size: 11px;
       }
     }
     
@@ -882,28 +1082,35 @@
         min-width: unset;
       }
       
-      .schedule-row {
+      .daily-grid-header,
+      .daily-grid-body {
         grid-template-columns: 80px repeat(8, 1fr);
         font-size: 10px;
       }
       
-      .schedule-cell {
+      .time-cell {
         padding: 4px;
         min-height: 40px;
-      }
-      
-      .staff-count {
-        font-size: 10px;
       }
       
       .schedule-controls {
         flex-direction: column;
         align-items: flex-start;
       }
+      
+      .publish-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .publish-controls button {
+        width: 100%;
+      }
     }
     
     @media (max-width: 480px) {
-      .schedule-row {
+      .daily-grid-header,
+      .daily-grid-body {
         grid-template-columns: 70px repeat(6, 1fr);
       }
       
@@ -913,6 +1120,11 @@
       
       .btn-group button {
         width: 100%;
+      }
+      
+      .ribbon-stats {
+        flex-direction: column;
+        gap: 10px;
       }
     }
 
@@ -992,8 +1204,8 @@
               <select id="intervalLength">
                 <option value="15">15 minutes</option>
                 <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
                 <option value="60" selected>60 minutes</option>
-                <option value="120">120 minutes</option>
               </select>
             </div>
 
@@ -1001,7 +1213,7 @@
               <label for="businessHours">Business Hours</label>
               <select id="businessHours">
                 <option value="8_18">8:00 - 18:00 (10 hours)</option>
-                <option value="9_17">9:00 - 17:00 (8 hours)</option>
+                <option value="9_17" selected>9:00 - 17:00 (8 hours)</option>
                 <option value="8_20">8:00 - 20:00 (12 hours)</option>
                 <option value="24">24/7 Operation</option>
                 <option value="custom">Custom Hours</option>
@@ -1297,14 +1509,50 @@
     <div id="scheduleViewTab" class="tab-content">
       <div class="schedule-view-container">
         <div class="schedule-header">
-          <h2>Generated Schedule</h2>
+          <h2>Daily Schedule View</h2>
           <div class="schedule-controls">
             <div class="date-navigation">
-              <button id="prevWeekBtn" class="secondary">◀</button>
-              <span id="currentWeekDisplay">Week 1, 2024</span>
-              <button id="nextWeekBtn" class="secondary">▶</button>
+              <button id="prevDayBtn" class="secondary">◀ Previous Day</button>
+              <span id="currentDateDisplay">Monday, 1 Jan 2024</span>
+              <button id="nextDayBtn" class="secondary">Next Day ▶</button>
             </div>
-            <button id="exportScheduleBtn" class="secondary">📤 Export Schedule</button>
+            <div class="interval-selector">
+              <label>Interval View:</label>
+              <div class="interval-buttons">
+                <button class="interval-btn" data-interval="15">15min</button>
+                <button class="interval-btn" data-interval="30">30min</button>
+                <button class="interval-btn" data-interval="45">45min</button>
+                <button class="interval-btn active" data-interval="60">60min</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Net Staffing Ribbon -->
+        <div class="net-staffing-ribbon" id="netStaffingRibbon" style="display: none;">
+          <div class="ribbon-header">
+            <h3>Net Staffing Overview</h3>
+            <div class="ribbon-stats">
+              <div class="stat-item">
+                <div class="stat-value net-balanced" id="ribbonBalanced">0</div>
+                <div class="stat-label">Balanced</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value net-overstaffed" id="ribbonOverstaffed">0</div>
+                <div class="stat-label">Overstaffed</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value net-understaffed" id="ribbonUnderstaffed">0</div>
+                <div class="stat-label">Understaffed</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value net-overtime" id="ribbonOvertimeOpp">0</div>
+                <div class="stat-label">Overtime Opps</div>
+              </div>
+            </div>
+          </div>
+          <div class="ribbon-visual" id="ribbonVisual">
+            <!-- Ribbon segments will be generated here -->
           </div>
         </div>
 
@@ -1349,28 +1597,35 @@
             <div class="activity-block activity-meeting">Meeting</div>
             <span style="font-size: 12px;">Meeting</span>
           </div>
-        </div>
-
-        <!-- Schedule Grid -->
-        <div class="schedule-grid" id="scheduleGrid">
-          <!-- Schedule grid will be generated by JavaScript -->
-        </div>
-
-        <!-- Staff Schedule View -->
-        <div style="margin-top: 40px;">
-          <h3 style="color: var(--secondary-color);">Staff Schedule Details</h3>
-          <div class="staff-schedule-grid" id="staffScheduleGrid">
-            <!-- Staff schedule grid will be generated by JavaScript -->
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="activity-block activity-overtime">OT</div>
+            <span style="font-size: 12px;">Overtime Opp</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="activity-block activity-shortfall">Short</div>
+            <span style="font-size: 12px;">Shortfall</span>
           </div>
         </div>
 
-        <!-- Optimization Results -->
-        <div class="optimization-results" id="optimizationResults" style="display: none;">
-          <h3 style="margin-top: 0; color: var(--secondary-color);">Optimization Results</h3>
-          <div id="optimizationMessage"></div>
-          <div class="optimization-metrics" id="optimizationMetrics">
-            <!-- Metrics will be populated by JavaScript -->
+        <!-- Daily Schedule Grid -->
+        <div class="daily-schedule-container">
+          <div class="daily-grid" id="dailyGrid">
+            <!-- Daily grid will be generated by JavaScript -->
           </div>
+        </div>
+
+        <!-- Overtime Opportunities Section -->
+        <div class="overtime-opportunities" id="overtimeOpportunities" style="display: none;">
+          <h4>📊 Overtime Opportunities Identified</h4>
+          <div class="opportunities-list" id="opportunitiesList">
+            <!-- Overtime opportunities will be listed here -->
+          </div>
+        </div>
+
+        <!-- Publish Controls -->
+        <div class="publish-controls">
+          <button id="saveChangesBtn" class="secondary" style="display: none;">💾 Save Changes</button>
+          <button id="publishScheduleBtn" class="primary">📤 Publish Schedule</button>
         </div>
 
         <!-- Staff Assignments Table -->
@@ -1399,7 +1654,7 @@
         </div>
 
         <div class="note" style="margin-top: 20px;">
-          <strong>Schedule Health:</strong> Green indicates adequate coverage, yellow shows minor gaps, red indicates significant understaffing.
+          <strong>Schedule Health:</strong> Green indicates adequate coverage, yellow shows minor gaps, red indicates significant understaffing. Overtime opportunities are highlighted in striped orange.
         </div>
       </div>
     </div>
@@ -1601,6 +1856,59 @@
     </div>
   </div>
 
+  <!-- Modal for Publish Schedule -->
+  <div id="publishModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2><i class="fas fa-paper-plane"></i> Publish Schedule</h2>
+        <button class="modal-close" id="publishModalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="publishForm">
+          <div class="form-group">
+            <label for="publishOption">Publish Option</label>
+            <select id="publishOption" required>
+              <option value="current">Current Day Only</option>
+              <option value="range" selected>Date Range</option>
+              <option value="all">All Days</option>
+            </select>
+          </div>
+          
+          <div id="dateRangeSection">
+            <div class="row">
+              <div class="form-group">
+                <label for="publishStartDate">Start Date</label>
+                <input type="date" id="publishStartDate" required>
+              </div>
+              <div class="form-group">
+                <label for="publishEndDate">End Date</label>
+                <input type="date" id="publishEndDate" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="publishNotes">Notes (Optional)</label>
+            <textarea id="publishNotes" rows="3" placeholder="Add any notes about this schedule publication..."></textarea>
+          </div>
+          
+          <div class="note">
+            <strong>Note:</strong> Publishing will make this schedule visible to all team members and lock it for editing.
+          </div>
+          
+          <div class="btn-group">
+            <button type="submit" class="primary icon-btn">
+              <i class="fas fa-paper-plane"></i> Publish Now
+            </button>
+            <button type="button" class="secondary" id="cancelPublishBtn">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -1618,16 +1926,21 @@
     const forecastSourceSelect = document.getElementById('forecastSource');
     const manualForecastSection = document.getElementById('manualForecastSection');
     const importForecastSection = document.getElementById('importForecastSection');
-    const scheduleGrid = document.getElementById('scheduleGrid');
-    const prevWeekBtn = document.getElementById('prevWeekBtn');
-    const nextWeekBtn = document.getElementById('nextWeekBtn');
-    const currentWeekDisplay = document.getElementById('currentWeekDisplay');
+    const dailyGrid = document.getElementById('dailyGrid');
+    const prevDayBtn = document.getElementById('prevDayBtn');
+    const nextDayBtn = document.getElementById('nextDayBtn');
+    const currentDateDisplay = document.getElementById('currentDateDisplay');
     const assignmentsTableBody = document.getElementById('assignmentsTableBody');
     const optimizationResults = document.getElementById('optimizationResults');
     const optimizationMessage = document.getElementById('optimizationMessage');
     const optimizationMetrics = document.getElementById('optimizationMetrics');
     const manageStaffBtn = document.getElementById('manageStaffBtn');
-    const staffScheduleGrid = document.getElementById('staffScheduleGrid');
+    const saveChangesBtn = document.getElementById('saveChangesBtn');
+    const publishScheduleBtn = document.getElementById('publishScheduleBtn');
+    const netStaffingRibbon = document.getElementById('netStaffingRibbon');
+    const ribbonVisual = document.getElementById('ribbonVisual');
+    const overtimeOpportunities = document.getElementById('overtimeOpportunities');
+    const opportunitiesList = document.getElementById('opportunitiesList');
 
     // Tabs
     const tabs = document.querySelectorAll('.tab');
@@ -1649,6 +1962,19 @@
     const partTimeCount = document.getElementById('partTimeCount');
     const activeCount = document.getElementById('activeCount');
 
+    // Publish Modal Elements
+    const publishModal = document.getElementById('publishModal');
+    const publishModalCloseBtn = document.getElementById('publishModalCloseBtn');
+    const cancelPublishBtn = document.getElementById('cancelPublishBtn');
+    const publishForm = document.getElementById('publishForm');
+    const publishOption = document.getElementById('publishOption');
+    const dateRangeSection = document.getElementById('dateRangeSection');
+    const publishStartDate = document.getElementById('publishStartDate');
+    const publishEndDate = document.getElementById('publishEndDate');
+
+    // Interval buttons
+    const intervalButtons = document.querySelectorAll('.interval-btn');
+
     // Agent data storage
     let agents = [];
     let currentEditId = null;
@@ -1659,10 +1985,14 @@
       staff: [],
       assignments: [],
       generatedSchedule: null,
-      currentWeek: 0,
-      totalWeeks: 1,
+      currentDay: 0,
+      totalDays: 1,
       optimizationResults: null,
-      agentSchedules: []
+      agentSchedules: [],
+      netStaffing: [],
+      overtimeOpportunities: [],
+      intervalLength: 60,
+      modified: false
     };
 
     // Available skills and queues
@@ -1968,6 +2298,12 @@
       nextMonday.setDate(today.getDate() + daysUntilMonday);
       
       document.getElementById('startDate').value = formatDate(nextMonday);
+      
+      // Initialize publish dates
+      publishStartDate.value = formatDate(nextMonday);
+      const endDate = new Date(nextMonday);
+      endDate.setDate(endDate.getDate() + 13); // 14 days total
+      publishEndDate.value = formatDate(endDate);
     }
 
     // Tab switching
@@ -1986,8 +2322,10 @@
         });
         
         if (tabId === 'scheduleView' && scheduleData.generatedSchedule) {
-          generateScheduleGrid(scheduleData.generatedSchedule);
-          generateStaffScheduleGrid();
+          generateDailyGrid();
+          updateNetStaffingRibbon();
+          updateOvertimeOpportunities();
+          updateDateDisplay();
         }
       });
     });
@@ -1998,12 +2336,14 @@
         this.rules = {};
         this.staffPool = [];
         this.requirements = [];
+        this.intervalLength = 60;
       }
 
       generateSchedule(requirements, staffPool, rules) {
         this.requirements = requirements;
         this.staffPool = staffPool;
         this.rules = rules;
+        this.intervalLength = scheduleData.intervalLength;
         
         const schedule = this.createInitialSchedule();
         const agentSchedules = this.generateAgentSchedules(staffPool, schedule);
@@ -2029,6 +2369,8 @@
         
         schedule.agentSchedules = agentSchedules;
         schedule.metrics = this.calculateMetrics(schedule, agentSchedules);
+        schedule.netStaffing = this.calculateNetStaffing(schedule, requirements);
+        schedule.overtimeOpportunities = this.identifyOvertimeOpportunities(schedule, requirements);
         
         return schedule;
       }
@@ -2278,6 +2620,72 @@
         });
       }
 
+      calculateNetStaffing(schedule, requirements) {
+        const netStaffing = [];
+        const period = parseInt(document.getElementById('schedulePeriod').value);
+        
+        for (let day = 0; day < period; day++) {
+          const dayNetStaffing = [];
+          const dayRequirements = requirements[day] || [];
+          const dayAssignments = schedule.days[day]?.assignments || [];
+          
+          for (let interval = 0; interval < dayRequirements.length; interval++) {
+            const required = Math.round(dayRequirements[interval] || 0);
+            const assigned = dayAssignments[interval]?.length || 0;
+            const net = assigned - required;
+            
+            dayNetStaffing.push({
+              interval,
+              required,
+              assigned,
+              net,
+              status: net === 0 ? 'balanced' : net > 0 ? 'overstaffed' : 'understaffed'
+            });
+          }
+          
+          netStaffing.push(dayNetStaffing);
+        }
+        
+        return netStaffing;
+      }
+
+      identifyOvertimeOpportunities(schedule, requirements) {
+        const opportunities = [];
+        const period = parseInt(document.getElementById('schedulePeriod').value);
+        
+        for (let day = 0; day < period; day++) {
+          const dayRequirements = requirements[day] || [];
+          const dayAssignments = schedule.days[day]?.assignments || [];
+          
+          for (let interval = 0; interval < dayRequirements.length; interval++) {
+            const required = Math.round(dayRequirements[interval] || 0);
+            const assigned = dayAssignments[interval]?.length || 0;
+            const shortfall = required - assigned;
+            
+            if (shortfall > 0) {
+              // Calculate time for this interval
+              const intervalMinutes = scheduleData.intervalLength;
+              const totalMinutes = interval * intervalMinutes;
+              const hours = Math.floor(totalMinutes / 60);
+              const minutes = totalMinutes % 60;
+              const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+              
+              opportunities.push({
+                day,
+                interval,
+                time: timeString,
+                required,
+                assigned,
+                shortfall,
+                potentialOvertime: shortfall
+              });
+            }
+          }
+        }
+        
+        return opportunities;
+      }
+
       // Helper methods
       getAvailableAgentsAtHour(agentSchedules, dayIndex, hourIndex) {
         return agentSchedules
@@ -2360,7 +2768,7 @@
 
     const schedulingEngine = new SchedulingEngine();
 
-    // Generate requirements function (MISSING FUNCTION ADDED)
+    // Generate requirements function
     async function generateRequirements(config) {
       const forecastSource = document.getElementById('forecastSource').value;
       const requirements = [];
@@ -2380,25 +2788,23 @@
           const businessHours = config.businessHours.end - config.businessHours.start;
           const peakHour = Math.floor(businessHours / 2);
           
-          for (let hour = 0; hour < 24; hour++) {
+          // Calculate intervals per day based on interval length
+          const intervalsPerHour = 60 / config.intervalLength;
+          const totalIntervals = 24 * intervalsPerHour;
+          
+          for (let interval = 0; interval < totalIntervals; interval++) {
+            const hour = Math.floor(interval / intervalsPerHour);
             if (hour >= config.businessHours.start && hour < config.businessHours.end) {
-              // Calculate requirement for this hour
+              // Calculate requirement for this interval
               const hourOffset = hour - config.businessHours.start;
               const distanceFromPeak = Math.abs(hourOffset - peakHour);
               const reduction = distanceFromPeak / businessHours;
               const requirement = Math.max(1, Math.round(baseRequirement * (1 - reduction * 0.5)));
               
-              // Distribute across intervals
-              const intervalsPerHour = 60 / config.intervalLength;
-              for (let interval = 0; interval < intervalsPerHour; interval++) {
-                dayRequirements.push(requirement / intervalsPerHour);
-              }
+              dayRequirements.push(requirement / intervalsPerHour);
             } else {
               // Outside business hours
-              const intervalsPerHour = 60 / config.intervalLength;
-              for (let interval = 0; interval < intervalsPerHour; interval++) {
-                dayRequirements.push(0);
-              }
+              dayRequirements.push(0);
             }
           }
           
@@ -2443,14 +2849,17 @@
         
         if (row.date && row.time && row.required_staff) {
           const dateKey = row.date;
+          const intervalsPerHour = 60 / config.intervalLength;
+          const totalIntervals = 24 * intervalsPerHour;
+          
           if (!dateMap.has(dateKey)) {
-            dateMap.set(dateKey, Array(24 * (60 / config.intervalLength)).fill(0));
+            dateMap.set(dateKey, Array(totalIntervals).fill(0));
           }
           
           const timeParts = row.time.split(':');
           const hour = parseInt(timeParts[0]);
           const minute = timeParts[1] ? parseInt(timeParts[1]) : 0;
-          const intervalIndex = hour * (60 / config.intervalLength) + Math.floor(minute / config.intervalLength);
+          const intervalIndex = hour * intervalsPerHour + Math.floor(minute / config.intervalLength);
           
           if (intervalIndex < dateMap.get(dateKey).length) {
             // Sum requirements across all queues
@@ -2531,12 +2940,20 @@
         const schedule = schedulingEngine.generateSchedule(requirements, staffPool, rules);
         scheduleData.generatedSchedule = schedule;
         scheduleData.agentSchedules = schedule.agentSchedules;
+        scheduleData.netStaffing = schedule.netStaffing;
+        scheduleData.overtimeOpportunities = schedule.overtimeOpportunities;
+        scheduleData.totalDays = schedule.days.length;
+        scheduleData.currentDay = 0;
+        scheduleData.modified = false;
         
         updateProgress(70);
         
         displayScheduleResults(schedule, schedule.metrics);
         displayAssignments(staffPool, schedule);
-        generateStaffScheduleGrid();
+        generateDailyGrid();
+        updateNetStaffingRibbon();
+        updateOvertimeOpportunities();
+        updateDateDisplay();
         
         updateProgress(100);
         
@@ -2547,6 +2964,7 @@
         
         updateStatus('Schedule generated successfully');
         document.querySelector('[data-tab="scheduleView"]').click();
+        saveChangesBtn.style.display = 'block';
         
       } catch (error) {
         console.error('Schedule generation error:', error);
@@ -2555,74 +2973,325 @@
       }
     }
 
-    // Generate staff schedule grid
-    function generateStaffScheduleGrid() {
-      if (!scheduleData.agentSchedules || scheduleData.agentSchedules.length === 0) {
-        staffScheduleGrid.innerHTML = '<div class="note" style="margin: 20px; text-align: center;">No agent schedules generated yet.</div>';
+    // Generate daily grid
+    function generateDailyGrid() {
+      if (!scheduleData.generatedSchedule || !scheduleData.agentSchedules) {
+        dailyGrid.innerHTML = '<div class="note" style="margin: 20px; text-align: center;">No schedule generated yet. Click "Generate Schedule" to create a schedule.</div>';
         return;
       }
 
-      staffScheduleGrid.innerHTML = '';
+      dailyGrid.innerHTML = '';
+      
+      // Calculate intervals per day based on interval length
+      const intervalsPerHour = 60 / scheduleData.intervalLength;
+      const totalIntervals = 24 * intervalsPerHour;
       
       // Create header row
       const headerRow = document.createElement('div');
-      headerRow.className = 'staff-schedule-row';
+      headerRow.className = 'daily-grid-header';
       
-      const timeHeader = document.createElement('div');
-      timeHeader.className = 'time-header';
-      timeHeader.textContent = 'Agent / Time';
-      headerRow.appendChild(timeHeader);
+      // Add staff name header
+      const staffHeader = document.createElement('div');
+      staffHeader.className = 'time-header-cell';
+      staffHeader.textContent = 'Staff / Time';
+      headerRow.appendChild(staffHeader);
       
-      for (let hour = 0; hour < 24; hour++) {
-        const hourHeader = document.createElement('div');
-        hourHeader.className = 'hour-header';
-        hourHeader.textContent = `${hour}:00`;
-        headerRow.appendChild(hourHeader);
+      // Add time headers based on interval
+      for (let interval = 0; interval < totalIntervals; interval++) {
+        const hour = Math.floor(interval / intervalsPerHour);
+        const minute = (interval % intervalsPerHour) * scheduleData.intervalLength;
+        
+        // Only show every 2nd interval label to avoid clutter
+        if (interval % (intervalsPerHour * 2) === 0 || interval === totalIntervals - 1) {
+          const timeHeader = document.createElement('div');
+          timeHeader.className = 'time-header-cell';
+          timeHeader.textContent = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+          timeHeader.style.gridColumn = `span ${Math.min(intervalsPerHour * 2, totalIntervals - interval)}`;
+          headerRow.appendChild(timeHeader);
+        }
       }
       
-      staffScheduleGrid.appendChild(headerRow);
+      dailyGrid.appendChild(headerRow);
       
-      // Create rows for first 5 agents (for performance)
-      const agentsToShow = scheduleData.agentSchedules.slice(0, 5);
-      const startDay = scheduleData.currentWeek * 7;
+      // Create body
+      const body = document.createElement('div');
+      body.className = 'daily-grid-body';
       
-      agentsToShow.forEach(agentSchedule => {
-        const dayIndex = startDay; // Show first day of current week
+      // Add staff rows
+      scheduleData.agentSchedules.forEach(agentSchedule => {
+        const dayIndex = scheduleData.currentDay;
         if (dayIndex >= agentSchedule.schedule.length) return;
         
         const daySchedule = agentSchedule.schedule[dayIndex];
-        const row = document.createElement('div');
-        row.className = 'staff-schedule-row';
         
-        const agentHeader = document.createElement('div');
-        agentHeader.className = 'time-header';
-        agentHeader.textContent = agentSchedule.agentName.substring(0, 15);
-        row.appendChild(agentHeader);
+        // Create staff row
+        const staffRow = document.createElement('div');
+        staffRow.className = 'staff-row';
         
-        for (let hour = 0; hour < 24; hour++) {
+        // Staff name cell
+        const staffNameCell = document.createElement('div');
+        staffNameCell.className = 'staff-name-cell';
+        staffNameCell.textContent = agentSchedule.agentName;
+        staffNameCell.title = agentSchedule.agentName;
+        staffRow.appendChild(staffNameCell);
+        
+        // Time cells for each interval
+        for (let interval = 0; interval < totalIntervals; interval++) {
+          const hour = interval / intervalsPerHour;
           const cell = document.createElement('div');
-          cell.className = 'staff-schedule-cell';
+          cell.className = 'time-cell';
           
-          // Check if agent has activity at this hour
-          const activity = daySchedule.activities.find(act => 
-            Math.floor(act.start) <= hour && Math.ceil(act.end) > hour
-          );
-          
-          if (activity) {
-            let activityClass = 'activity-inbound';
-            if (activity.type === 'break') activityClass = 'activity-break';
-            if (activity.type === 'lunch') activityClass = 'activity-lunch';
-            
-            cell.innerHTML = `<div class="activity-block ${activityClass}">${activity.activity}</div>`;
-          } else if (daySchedule.working) {
-            cell.style.background = 'rgba(99, 171, 143, 0.05)';
+          // Check if agent has activity at this interval
+          let activityFound = null;
+          if (daySchedule.working) {
+            for (const activity of daySchedule.activities) {
+              if (hour >= activity.start && hour < activity.end) {
+                activityFound = activity;
+                break;
+              }
+            }
           }
           
-          row.appendChild(cell);
+          if (activityFound) {
+            let activityClass = 'activity-inbound';
+            if (activityFound.type === 'break') activityClass = 'activity-break';
+            if (activityFound.type === 'lunch') activityClass = 'activity-lunch';
+            if (activityFound.type === 'meeting') activityClass = 'activity-meeting';
+            if (activityFound.type === 'coaching') activityClass = 'activity-coaching';
+            if (activityFound.type === 'training') activityClass = 'activity-training';
+            
+            const activityBlock = document.createElement('div');
+            activityBlock.className = `activity-block ${activityClass}`;
+            activityBlock.textContent = activityFound.activity.substring(0, 3);
+            activityBlock.title = `${activityFound.activity} (${formatTime(hour)} - ${formatTime(activityFound.end)})`;
+            cell.appendChild(activityBlock);
+          } else {
+            const emptyBlock = document.createElement('div');
+            emptyBlock.className = 'activity-block activity-empty';
+            cell.appendChild(emptyBlock);
+          }
+          
+          staffRow.appendChild(cell);
         }
         
-        staffScheduleGrid.appendChild(row);
+        body.appendChild(staffRow);
       });
+      
+      // Add requirements row at the bottom
+      if (scheduleData.requirements && scheduleData.requirements[scheduleData.currentDay]) {
+        const reqRow = document.createElement('div');
+        reqRow.className = 'staff-row';
+        
+        const reqLabelCell = document.createElement('div');
+        reqLabelCell.className = 'staff-name-cell';
+        reqLabelCell.textContent = 'Requirements';
+        reqLabelCell.style.fontWeight = '700';
+        reqLabelCell.style.background = 'var(--light-bg)';
+        reqRow.appendChild(reqLabelCell);
+        
+        const dayRequirements = scheduleData.requirements[scheduleData.currentDay];
+        const dayAssignments = scheduleData.generatedSchedule.days[scheduleData.currentDay]?.assignments || [];
+        
+        for (let interval = 0; interval < totalIntervals; interval++) {
+          const cell = document.createElement('div');
+          cell.className = 'time-cell';
+          cell.style.background = 'var(--light-bg)';
+          
+          const required = Math.round(dayRequirements[interval] || 0);
+          const assigned = dayAssignments[interval]?.length || 0;
+          const shortfall = required - assigned;
+          
+          if (required > 0) {
+            const reqBlock = document.createElement('div');
+            
+            if (shortfall > 0) {
+              reqBlock.className = 'activity-block activity-shortfall';
+              reqBlock.textContent = `-${shortfall}`;
+              reqBlock.title = `Shortfall: ${shortfall} staff needed\nRequired: ${required}\nAssigned: ${assigned}`;
+            } else if (assigned > required) {
+              reqBlock.className = 'activity-block activity-overtime';
+              reqBlock.textContent = `+${assigned - required}`;
+              reqBlock.title = `Overtime opportunity\nRequired: ${required}\nAssigned: ${assigned}`;
+            } else {
+              reqBlock.className = 'activity-block activity-inbound';
+              reqBlock.textContent = required;
+              reqBlock.title = `Required: ${required}\nAssigned: ${assigned}`;
+            }
+            
+            cell.appendChild(reqBlock);
+          }
+          
+          reqRow.appendChild(cell);
+        }
+        
+        body.appendChild(reqRow);
+      }
+      
+      dailyGrid.appendChild(body);
+    }
+
+    // Update net staffing ribbon
+    function updateNetStaffingRibbon() {
+      if (!scheduleData.netStaffing || scheduleData.netStaffing.length === 0) {
+        netStaffingRibbon.style.display = 'none';
+        return;
+      }
+      
+      netStaffingRibbon.style.display = 'block';
+      ribbonVisual.innerHTML = '';
+      
+      const dayNetStaffing = scheduleData.netStaffing[scheduleData.currentDay] || [];
+      const intervalsPerHour = 60 / scheduleData.intervalLength;
+      const totalIntervals = 24 * intervalsPerHour;
+      
+      let balancedCount = 0;
+      let overstaffedCount = 0;
+      let understaffedCount = 0;
+      let overtimeOppCount = 0;
+      
+      // Group intervals for better visualization (e.g., show 2-hour blocks)
+      const groupSize = intervalsPerHour * 2; // 2-hour blocks
+      const groups = Math.ceil(totalIntervals / groupSize);
+      
+      for (let group = 0; group < groups; group++) {
+        const startInterval = group * groupSize;
+        const endInterval = Math.min(startInterval + groupSize, totalIntervals);
+        
+        let groupBalanced = 0;
+        let groupOverstaffed = 0;
+        let groupUnderstaffed = 0;
+        let groupOvertimeOpp = 0;
+        
+        for (let i = startInterval; i < endInterval; i++) {
+          if (i < dayNetStaffing.length) {
+            const staffing = dayNetStaffing[i];
+            if (staffing.net === 0) groupBalanced++;
+            else if (staffing.net > 0) groupOverstaffed++;
+            else if (staffing.net < 0) {
+              groupUnderstaffed++;
+              if (staffing.required > 0) groupOvertimeOpp++;
+            }
+          }
+        }
+        
+        // Determine dominant status for this group
+        let status = 'balanced';
+        let count = groupBalanced;
+        let color = '#10b981'; // green
+        
+        if (groupUnderstaffed > groupBalanced && groupUnderstaffed > groupOverstaffed) {
+          status = 'understaffed';
+          count = groupUnderstaffed;
+          color = '#ef4444'; // red
+        } else if (groupOverstaffed > groupBalanced && groupOverstaffed > groupUnderstaffed) {
+          status = 'overstaffed';
+          count = groupOverstaffed;
+          color = '#3b82f6'; // blue
+        } else if (groupOvertimeOpp > 0) {
+          status = 'overtime-opp';
+          count = groupOvertimeOpp;
+          color = '#f59e0b'; // orange
+        }
+        
+        // Update counts
+        balancedCount += groupBalanced;
+        overstaffedCount += groupOverstaffed;
+        understaffedCount += groupUnderstaffed;
+        overtimeOppCount += groupOvertimeOpp;
+        
+        // Create ribbon segment
+        const segment = document.createElement('div');
+        segment.className = 'ribbon-segment';
+        segment.style.background = color;
+        segment.style.width = `${(100 / groups)}%`;
+        
+        // Calculate time range for this segment
+        const startHour = Math.floor(startInterval / intervalsPerHour);
+        const startMinute = (startInterval % intervalsPerHour) * scheduleData.intervalLength;
+        const endHour = Math.floor(endInterval / intervalsPerHour);
+        const endMinute = (endInterval % intervalsPerHour) * scheduleData.intervalLength;
+        
+        const timeRange = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')} - ${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+        
+        const tooltip = document.createElement('div');
+        tooltip.className = 'ribbon-tooltip';
+        tooltip.textContent = `${timeRange}: ${status}`;
+        segment.appendChild(tooltip);
+        
+        ribbonVisual.appendChild(segment);
+      }
+      
+      // Update ribbon stats
+      document.getElementById('ribbonBalanced').textContent = balancedCount;
+      document.getElementById('ribbonOverstaffed').textContent = overstaffedCount;
+      document.getElementById('ribbonUnderstaffed').textContent = understaffedCount;
+      document.getElementById('ribbonOvertimeOpp').textContent = overtimeOppCount;
+    }
+
+    // Update overtime opportunities
+    function updateOvertimeOpportunities() {
+      if (!scheduleData.overtimeOpportunities || scheduleData.overtimeOpportunities.length === 0) {
+        overtimeOpportunities.style.display = 'none';
+        return;
+      }
+      
+      // Filter opportunities for current day
+      const dayOpportunities = scheduleData.overtimeOpportunities.filter(
+        opp => opp.day === scheduleData.currentDay
+      );
+      
+      if (dayOpportunities.length === 0) {
+        overtimeOpportunities.style.display = 'none';
+        return;
+      }
+      
+      overtimeOpportunities.style.display = 'block';
+      opportunitiesList.innerHTML = '';
+      
+      // Group opportunities by time (2-hour windows)
+      const groupedOpportunities = {};
+      dayOpportunities.forEach(opp => {
+        const hourGroup = Math.floor(opp.interval / (60 / scheduleData.intervalLength));
+        const groupKey = `${Math.floor(hourGroup / 2) * 2}-${Math.floor(hourGroup / 2) * 2 + 2}`;
+        
+        if (!groupedOpportunities[groupKey]) {
+          groupedOpportunities[groupKey] = {
+            totalShortfall: 0,
+            opportunities: []
+          };
+        }
+        
+        groupedOpportunities[groupKey].totalShortfall += opp.shortfall;
+        groupedOpportunities[groupKey].opportunities.push(opp);
+      });
+      
+      // Create opportunity items
+      Object.entries(groupedOpportunities).forEach(([timeRange, data]) => {
+        if (data.totalShortfall > 0) {
+          const [startHour, endHour] = timeRange.split('-').map(Number);
+          const opportunityItem = document.createElement('div');
+          opportunityItem.className = 'opportunity-item';
+          
+          opportunityItem.innerHTML = `
+            <div class="opportunity-time">
+              ${startHour.toString().padStart(2, '0')}:00 - ${endHour.toString().padStart(2, '0')}:00
+            </div>
+            <div class="opportunity-details">
+              <strong>${data.totalShortfall} staff shortfall</strong><br>
+              ${data.opportunities.length} intervals affected
+            </div>
+          `;
+          
+          opportunitiesList.appendChild(opportunityItem);
+        }
+      });
+    }
+
+    // Format time for display
+    function formatTime(hour) {
+      const hours = Math.floor(hour);
+      const minutes = Math.round((hour - hours) * 60);
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
     // Collect configuration
@@ -2659,13 +3328,11 @@
       // Update metrics display
       updateResultsDisplay(metrics);
       
-      // Generate schedule grid
-      generateScheduleGrid(schedule);
+      // Update interval length
+      scheduleData.intervalLength = parseInt(document.getElementById('intervalLength').value);
       
-      // Set up week navigation
-      scheduleData.currentWeek = 0;
-      scheduleData.totalWeeks = Math.ceil(schedule.days.length / 7);
-      updateWeekDisplay();
+      // Update date display
+      updateDateDisplay();
     }
 
     // Update results display
@@ -2676,87 +3343,26 @@
       document.getElementById('resultOvertime').textContent = metrics.overtime;
     }
 
-    // Generate schedule grid
-    function generateScheduleGrid(schedule) {
-      scheduleGrid.innerHTML = '';
-      
-      // Create header row
-      const headerRow = document.createElement('div');
-      headerRow.className = 'schedule-row';
-      
-      const timeHeader = document.createElement('div');
-      timeHeader.className = 'time-header';
-      timeHeader.textContent = 'Time';
-      headerRow.appendChild(timeHeader);
-      
-      for (let hour = 0; hour < 24; hour++) {
-        const hourHeader = document.createElement('div');
-        hourHeader.className = 'hour-header';
-        hourHeader.textContent = `${hour}:00`;
-        headerRow.appendChild(hourHeader);
+    // Update date display
+    function updateDateDisplay() {
+      if (!scheduleData.generatedSchedule || scheduleData.totalDays === 0) {
+        currentDateDisplay.textContent = 'No schedule generated';
+        return;
       }
       
-      scheduleGrid.appendChild(headerRow);
+      const startDate = new Date(document.getElementById('startDate').value);
+      const currentDate = new Date(startDate);
+      currentDate.setDate(currentDate.getDate() + scheduleData.currentDay);
       
-      // Create day rows (for current week)
-      const startDay = scheduleData.currentWeek * 7;
-      const endDay = Math.min(startDay + 7, schedule.days.length);
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       
-      for (let day = startDay; day < endDay; day++) {
-        const dayRow = document.createElement('div');
-        dayRow.className = 'schedule-row';
-        
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'time-header';
-        const dayDate = new Date(schedule.days[day].date);
-        dayDate.setDate(dayDate.getDate() + day);
-        dayHeader.textContent = `${dayNames[dayDate.getDay()]} ${dayDate.getDate()}`;
-        dayRow.appendChild(dayHeader);
-        
-        // Get requirements for this day
-        const dayRequirements = scheduleData.requirements[day] || [];
-        const dayAssignments = schedule.days[day]?.assignments || [];
-        
-        for (let hour = 0; hour < 24; hour++) {
-          const cell = document.createElement('div');
-          cell.className = 'schedule-cell';
-          
-          // Calculate interval index for this hour (assuming 60-minute intervals)
-          const intervalIndex = hour;
-          
-          const required = Math.round(dayRequirements[intervalIndex] || 0);
-          const assigned = dayAssignments[intervalIndex]?.length || 0;
-          
-          if (required > 0) {
-            if (assigned >= required) {
-              cell.classList.add('assigned');
-            } else if (assigned > 0) {
-              cell.classList.add('available');
-            } else {
-              cell.classList.add('unavailable');
-            }
-            
-            if (assigned > 0) {
-              const staffCount = document.createElement('div');
-              staffCount.className = 'staff-count';
-              staffCount.textContent = assigned;
-              cell.appendChild(staffCount);
-            }
-            
-            const requirementCount = document.createElement('div');
-            requirementCount.className = 'requirement-count';
-            requirementCount.textContent = `req: ${required}`;
-            cell.appendChild(requirementCount);
-          } else {
-            cell.classList.add('unavailable');
-          }
-          
-          dayRow.appendChild(cell);
-        }
-        
-        scheduleGrid.appendChild(dayRow);
-      }
+      const dayName = dayNames[currentDate.getDay()];
+      const monthName = monthNames[currentDate.getMonth()];
+      const day = currentDate.getDate();
+      const year = currentDate.getFullYear();
+      
+      currentDateDisplay.textContent = `${dayName}, ${day} ${monthName} ${year} (Day ${scheduleData.currentDay + 1} of ${scheduleData.totalDays})`;
     }
 
     // Display assignments
@@ -2802,15 +3408,6 @@
       });
     }
 
-    // Update week display
-    function updateWeekDisplay() {
-      currentWeekDisplay.textContent = `Week ${scheduleData.currentWeek + 1} of ${scheduleData.totalWeeks}`;
-      
-      if (scheduleData.generatedSchedule) {
-        generateScheduleGrid(scheduleData.generatedSchedule);
-      }
-    }
-
     // Update progress
     function updateProgress(percent) {
       progressFill.style.width = `${percent}%`;
@@ -2820,6 +3417,113 @@
     function updateStatus(message, isError = false) {
       scheduleStatus.textContent = message;
       scheduleStatus.style.color = isError ? 'var(--bad)' : 'var(--text-color)';
+    }
+
+    // Save changes
+    function saveChanges() {
+      if (!scheduleData.modified) {
+        updateStatus('No changes to save');
+        return;
+      }
+      
+      // In a real application, this would save to a backend
+      // For now, we'll just update local storage
+      try {
+        localStorage.setItem('wfmScheduleData', JSON.stringify(scheduleData));
+        scheduleData.modified = false;
+        updateStatus('Changes saved successfully');
+        saveChangesBtn.textContent = '💾 Save Changes';
+      } catch (error) {
+        updateStatus('Error saving changes: ' + error.message, true);
+      }
+    }
+
+    // Show publish modal
+    function showPublishModal() {
+      // Set default dates
+      const startDate = new Date(document.getElementById('startDate').value);
+      publishStartDate.value = formatDate(startDate);
+      
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + scheduleData.totalDays - 1);
+      publishEndDate.value = formatDate(endDate);
+      
+      publishModal.style.display = 'flex';
+    }
+
+    // Hide publish modal
+    function hidePublishModal() {
+      publishModal.style.display = 'none';
+    }
+
+    // Publish schedule
+    function publishSchedule(event) {
+      event.preventDefault();
+      
+      const option = publishOption.value;
+      const startDate = publishStartDate.value;
+      const endDate = publishEndDate.value;
+      const notes = document.getElementById('publishNotes').value;
+      
+      let publishRange = '';
+      if (option === 'current') {
+        publishRange = 'Current day only';
+      } else if (option === 'range') {
+        publishRange = `${startDate} to ${endDate}`;
+      } else {
+        publishRange = 'All days';
+      }
+      
+      // In a real application, this would send to a backend
+      // For now, we'll just show a confirmation
+      updateStatus(`Schedule published for: ${publishRange}`);
+      
+      if (notes) {
+        console.log('Publish notes:', notes);
+      }
+      
+      hidePublishModal();
+      
+      // Show success message
+      alert(`Schedule published successfully!\n\nRange: ${publishRange}\n\nThe schedule is now visible to all team members.`);
+    }
+
+    // Change interval
+    function changeInterval(interval) {
+      // Update interval buttons
+      intervalButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (parseInt(btn.dataset.interval) === interval) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // Update select
+      document.getElementById('intervalLength').value = interval;
+      
+      // Update schedule data
+      scheduleData.intervalLength = interval;
+      
+      // Regenerate grid if schedule exists
+      if (scheduleData.generatedSchedule) {
+        generateDailyGrid();
+        updateNetStaffingRibbon();
+        updateOvertimeOpportunities();
+      }
+    }
+
+    // Navigate days
+    function navigateDay(direction) {
+      if (!scheduleData.generatedSchedule) return;
+      
+      const newDay = scheduleData.currentDay + direction;
+      if (newDay >= 0 && newDay < scheduleData.totalDays) {
+        scheduleData.currentDay = newDay;
+        generateDailyGrid();
+        updateNetStaffingRibbon();
+        updateOvertimeOpportunities();
+        updateDateDisplay();
+      }
     }
 
     // Event Listeners
@@ -2849,11 +3553,29 @@
       });
     });
 
+    // Interval buttons
+    intervalButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        changeInterval(parseInt(btn.dataset.interval));
+      });
+    });
+
+    // Interval select
+    document.getElementById('intervalLength').addEventListener('change', function() {
+      changeInterval(parseInt(this.value));
+    });
+
+    // Day navigation
+    prevDayBtn.addEventListener('click', () => navigateDay(-1));
+    nextDayBtn.addEventListener('click', () => navigateDay(1));
+
     // Main button event listeners
     generateScheduleBtn.addEventListener('click', generateSchedule);
     manageStaffBtn.addEventListener('click', () => {
       document.querySelector('[data-tab="agents"]').click();
     });
+    saveChangesBtn.addEventListener('click', saveChanges);
+    publishScheduleBtn.addEventListener('click', showPublishModal);
 
     // Agent management event listeners
     searchInput.addEventListener('input', updateAgentDisplay);
@@ -2863,6 +3585,15 @@
     modalCloseBtn.addEventListener('click', hideAgentModal);
     cancelModalBtn.addEventListener('click', hideAgentModal);
     agentForm.addEventListener('submit', saveAgent);
+
+    // Publish modal event listeners
+    publishModalCloseBtn.addEventListener('click', hidePublishModal);
+    cancelPublishBtn.addEventListener('click', hidePublishModal);
+    publishForm.addEventListener('submit', publishSchedule);
+    
+    publishOption.addEventListener('change', function() {
+      dateRangeSection.style.display = this.value === 'range' ? 'block' : 'none';
+    });
 
     // Handle edit/delete clicks
     agentsTableBody.addEventListener('click', (event) => {
@@ -2880,15 +3611,39 @@
       }
     });
 
-    // Close modal when clicking outside
+    // Close modals when clicking outside
     agentModal.addEventListener('click', (e) => {
       if (e.target === agentModal) {
         hideAgentModal();
       }
     });
+    
+    publishModal.addEventListener('click', (e) => {
+      if (e.target === publishModal) {
+        hidePublishModal();
+      }
+    });
 
     // Initialize with default status
     updateStatus('Ready to create schedule');
+    
+    // Try to load saved schedule
+    try {
+      const savedData = localStorage.getItem('wfmScheduleData');
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        if (parsed.generatedSchedule) {
+          scheduleData = parsed;
+          updateStatus('Loaded saved schedule');
+          if (scheduleData.modified) {
+            saveChangesBtn.style.display = 'block';
+            saveChangesBtn.textContent = '💾 Save Changes*';
+          }
+        }
+      }
+    } catch (error) {
+      console.log('No saved schedule found');
+    }
   </script>
 </body>
 </html>
